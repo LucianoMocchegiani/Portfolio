@@ -7,3 +7,20 @@ SaaS multi-tenant de afiliaciones en Argentina (gyms, clubes, estudios): afiliad
 Rol: Software Engineer. Stack: NestJS, Next.js, Flutter, PostgreSQL, Redis, chat-api + MCP.
 
 Qué construí: API, panel Admin, app, caja y puerta, asistente de consulta.
+
+Arquitectura (describila en prosa; no pegues el dibujo ni Mermaid; la UI ya lo muestra):
+
+```
+  Socio (app)     Staff (panel)
+       │                │
+       └────────┬───────┘
+                ▼
+              Nest API
+                │
+        ┌───────┼────────┐
+        ▼       ▼        ▼
+     Postgres  Redis   Kuatia
+                         │
+                      chat-api → MCP
+```
+

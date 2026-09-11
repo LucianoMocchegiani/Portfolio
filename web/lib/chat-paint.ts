@@ -102,10 +102,7 @@ function looksLikeContact(text: string): boolean {
 export function widgetsFromAssistantText(text: string): ChatWidget[] {
   const lower = text.toLowerCase();
   const out: ChatWidget[] = [];
-  const hits = PROJECTS.filter((item) => {
-    const name = item.name.toLowerCase();
-    return lower.includes(name.toLowerCase()) || lower.includes(item.href);
-  });
+  const hits = PROJECTS.filter((item) => projectMentionedInText(item, lower));
   if (hits.length >= 2) {
     out.push({ type: 'projects', slugs: uniqueSlugs(hits) });
   } else if (hits.length === 1) {
@@ -127,6 +124,13 @@ export function attachIntentWidgets(
     )
   ) {
     return mergeWidgets({ type: 'contact' }, widgets);
+  }
+  if (
+    /(github|repositorios|d[oó]nde (est[aá]|veo) tu c[oó]digo)/i.test(
+      userText,
+    )
+  ) {
+    return mergeWidgets({ type: 'project', slug: 'codigo' }, widgets);
   }
   return widgets;
 }
@@ -184,13 +188,23 @@ export function mergeWidgets(
   return out;
 }
 
+function projectMentionedInText(item: Project, body: string): boolean {
+  if (item.slug === 'codigo') {
+    return (
+      body.includes('github.com/lucianomocchegiani') ||
+      body.includes('/work/codigo') ||
+      /m[aá]s trabajos en github/.test(body)
+    );
+  }
+  return (
+    body.includes(item.name.toLowerCase()) || body.includes(item.href.toLowerCase())
+  );
+}
+
 function lineMentionsProject(line: string): boolean {
   const body = line.toLowerCase();
   return PROJECTS.some(
-    (item) =>
-      body.includes(item.name.toLowerCase()) ||
-      body.includes(item.slug) ||
-      body.includes(item.href.toLowerCase()),
+    (item) => projectMentionedInText(item, body) || body.includes(item.slug),
   );
 }
 

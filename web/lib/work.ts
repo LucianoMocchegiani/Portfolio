@@ -1,4 +1,4 @@
-export type WorkKind = 'propio' | 'asignado';
+export type WorkKind = 'propio' | 'asignado' | 'repos';
 
 export type Project = {
   slug: string;
@@ -10,7 +10,7 @@ export type Project = {
   stack: string[];
   about: string;
   built: string[];
-  architecture: string;
+  architecture?: string;
   questions: string[];
   featured: boolean;
 };
@@ -34,21 +34,20 @@ export const PROJECTS: Project[] = [
       'Wallet (holder)',
       'Flujos de oferta y presentación',
     ],
-    architecture: `             ┌──────────┐
-             │  Wallet  │
-             └────┬─────┘
-                  │ OpenID4VC
-             ┌────▼─────┐
-             │   Web    │
-             └────┬─────┘
-                  │
-       ┌──────────┼──────────┐
-       ▼          ▼          ▼
-    Billing    Issuer    Verifier
-       │          │          │
-       └──────────┴────┬─────┘
-                       ▼
-                   PostgreSQL`,
+    architecture: `flowchart TB
+  wallet[Wallet]
+  web[Web]
+  billing[Billing]
+  issuer[Issuer]
+  verifier[Verifier]
+  db[(PostgreSQL)]
+  wallet -->|OpenID4VC| web
+  web --> billing
+  web --> issuer
+  web --> verifier
+  billing --> db
+  issuer --> db
+  verifier --> db`,
     questions: [
       '¿Por qué OpenID4VC y no un QR propietario?',
       '¿Cómo es el flujo de una credencial?',
@@ -73,17 +72,22 @@ export const PROJECTS: Project[] = [
       'Asistente (chat-api portable + MCP de lectura)',
       'Multi-tenant y roles',
     ],
-    architecture: `  Socio (app)     Staff (panel)
-       │                │
-       └────────┬───────┘
-                ▼
-              Nest API
-                │
-        ┌───────┼────────┐
-        ▼       ▼        ▼
-     Postgres  Redis   Kuatia
-                         │
-                      chat-api → MCP`,
+    architecture: `flowchart TB
+  socio["Socio (app)"]
+  staff["Staff (panel)"]
+  api[Nest API]
+  pg[(Postgres)]
+  redis[(Redis)]
+  kuatia[Kuatia]
+  chat[chat-api]
+  mcp[MCP]
+  socio --> api
+  staff --> api
+  api --> pg
+  api --> redis
+  api --> kuatia
+  api --> chat
+  chat --> mcp`,
     questions: [
       '¿Qué problema resuelve Faciliter?',
       '¿Cómo se relaciona con Kuatia?',
@@ -107,18 +111,19 @@ export const PROJECTS: Project[] = [
       'Integración con el ecosistema Quark (emisor, verificador, accesos)',
       'Infra compartida con MiBA / QuarkID',
     ],
-    architecture: `        Ciudadano
-            │
-        ┌───▼───┐
-        │  BAX  │  app Flutter
-        └───┬───┘
-            │
-     ┌──────┼──────┐
-     ▼      ▼      ▼
-  MiBA   Quark   Servicios
-  auth   Agent      BA
-            │
-     emisor / verificador / accesos`,
+    architecture: `flowchart TB
+  ciudadano[Ciudadano]
+  bax["BAX app Flutter"]
+  miba[MiBA auth]
+  quark[Quark Agent]
+  servicios[Servicios BA]
+  ciudadano --> bax
+  bax --> miba
+  bax --> quark
+  bax --> servicios
+  quark --> emisor[Emisor]
+  quark --> verificador[Verificador]
+  quark --> accesos[Accesos]`,
     questions: [
       '¿Qué es BAX y qué hiciste ahí?',
       '¿Cómo se conecta BAX con QuarkID?',
@@ -143,20 +148,24 @@ export const PROJECTS: Project[] = [
       'MiBA Connect (DIDs, VCs, WACI)',
       'KMS / DIDComm y resolución de DIDs (Sidetree, IPFS, RSK/LACChain)',
     ],
-    architecture: `  Front emisor / verificador / accesos
-              │
-              ▼
-         APIs Nest
-              │
-        QuarkID Agent
-              │
-     ┌────────┼────────┐
-     ▼        ▼        ▼
-   Wallet   Redis    Postgres
-     │
-  MiBA Connect → KMS → Vault
-     │
-  Sidetree / IPFS / chain`,
+    architecture: `flowchart TB
+  fronts["Front emisor / verificador / accesos"]
+  apis[APIs Nest]
+  agent[QuarkID Agent]
+  wallet[Wallet]
+  redis[(Redis)]
+  pg[(Postgres)]
+  connect[MiBA Connect]
+  kms[KMS / Vault]
+  did["Sidetree / IPFS / chain"]
+  fronts --> apis
+  apis --> agent
+  agent --> wallet
+  agent --> redis
+  agent --> pg
+  wallet --> connect
+  connect --> kms
+  connect --> did`,
     questions: [
       '¿Qué es WACI en este ecosistema?',
       '¿Para qué usan Redis en el verificador?',
@@ -179,19 +188,21 @@ export const PROJECTS: Project[] = [
       'Front ciudadano y shell de microfrontends',
       'Conectores externos y queue manager',
     ],
-    architecture: `  Ciudadano (React)     Backoffice (microfrontends)
-           │                        │
-           └──────────┬─────────────┘
-                      ▼
-              backoffice-backend
-                      │
-              ┌───────┴───────┐
-              ▼               ▼
-             core         connectors
-              │               │
-           Postgres        Boti / etc.
-              ▼
-         queue-manager (Kafka)`,
+    architecture: `flowchart TB
+  ciudadano["Ciudadano (React)"]
+  backoffice["Backoffice (microfrontends)"]
+  backend[backoffice-backend]
+  core[core]
+  connectors[connectors]
+  pg[(Postgres)]
+  kafka[queue-manager Kafka]
+  ciudadano --> backend
+  backoffice --> backend
+  backend --> core
+  backend --> connectors
+  core --> pg
+  core --> kafka
+  connectors --> boti[Boti / etc.]`,
     questions: [
       '¿Cómo está partido Servicios BA?',
       '¿Qué rol tiene Kafka?',
@@ -215,12 +226,12 @@ export const PROJECTS: Project[] = [
       'Panel de administración (usuarios, paquetes, especialistas)',
       'Testing y refactor continuo',
     ],
-    architecture: `  Microfrontends (Vite)
-           │
-           ▼
-        APIs Node
-           │
-          AWS`,
+    architecture: `flowchart TB
+  fronts["Microfrontends (Vite)"]
+  apis[APIs Node]
+  aws[AWS]
+  fronts --> apis
+  apis --> aws`,
     questions: [
       '¿Qué hiciste en Aubilities?',
       '¿Cómo armaban los microfrontends?',
@@ -242,12 +253,12 @@ export const PROJECTS: Project[] = [
       'Módulo de pizarras en tiempo real',
       'Optimización, testing y refactor de módulos',
     ],
-    architecture: `  iOS / Android (Expo)
-           │
-           ▼
-        API Node
-           │
-       PostgreSQL`,
+    architecture: `flowchart TB
+  app["iOS / Android (Expo)"]
+  api[API Node]
+  pg[(PostgreSQL)]
+  app --> api
+  api --> pg`,
     questions: ['¿Qué hiciste en Seekitup?', '¿React Native o web?'],
     featured: false,
   },
@@ -266,14 +277,34 @@ export const PROJECTS: Project[] = [
       'Integración con APIs de pagos y de conexiones',
       'Planes, promociones, facturación y dashboard',
     ],
-    architecture: `  React
-    │
-    ▼
-  Express + Sequelize
-    │
-  PostgreSQL`,
+    architecture: `flowchart TB
+  web[React]
+  api["Express + Sequelize"]
+  pg[(PostgreSQL)]
+  web --> api
+  api --> pg`,
     questions: ['¿Qué hiciste en Skynet?', '¿Con qué stack empezaste?'],
     featured: false,
+  },
+  {
+    slug: 'codigo',
+    name: 'Código',
+    tagline: 'Más trabajos en GitHub',
+    kind: 'repos',
+    href: 'https://github.com/LucianoMocchegiani',
+    role: 'Perfil público — repos, experimentos y el resto del código',
+    stack: ['TypeScript', 'JavaScript', 'Python', 'Dart'],
+    about:
+      'Las cards de este sitio son los productos y asignaciones con ficha. El resto del código —pruebas, snippets, WIP— está en el perfil de GitHub, con el mismo icono que ves acá.',
+    built: [
+      'Repos públicos de productos propios y asignaciones',
+      'Pruebas, snippets y trabajo en curso',
+    ],
+    questions: [
+      '¿Dónde veo tu código?',
+      '¿Qué hay en tu GitHub?',
+    ],
+    featured: true,
   },
 ];
 
@@ -286,7 +317,18 @@ export const PROJECT_LOOK: Record<string, { mark: string }> = {
   aubilities: { mark: 'AU' },
   seekitup: { mark: 'SK' },
   ipskynet: { mark: 'IS' },
+  codigo: { mark: 'GH' },
 };
+
+export function workKindLabel(kind: WorkKind, long = false): string {
+  if (kind === 'repos') {
+    return long ? 'Código' : 'Repos';
+  }
+  if (kind === 'propio') {
+    return long ? 'Proyecto propio' : 'Propio';
+  }
+  return long ? 'Asignado' : 'Asignado';
+}
 
 export function projectBySlug(slug: string): Project | undefined {
   return PROJECTS.find((item) => item.slug === slug);
@@ -311,12 +353,14 @@ const PROJECT_COVER: Record<string, string> = {
   faciliter: '/work/faciliter.png',
   'servicios-ba': '/work/servicios-ba.svg',
   ipskynet: '/work/ipskynet.svg',
+  codigo: '/work/codigo.svg',
 };
 
 const PROJECT_DISC: Record<string, 'black' | 'white'> = {
   faciliter: 'black',
   kuatia: 'black',
   seekitup: 'black',
+  codigo: 'black',
   bax: 'white',
   quarkid: 'white',
   aubilities: 'white',
@@ -411,5 +455,6 @@ export const HOME_QUESTIONS = [
   'Hablame de vos y de tu experiencia',
   '¿Qué proyectos hiciste?',
   '¿Qué habilidades tenés?',
+  '¿Dónde veo tu código?',
   '¿Cómo te contacto?',
 ];

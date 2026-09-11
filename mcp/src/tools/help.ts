@@ -26,7 +26,7 @@ export function registerHelpTools(server: McpServer): void {
     {
       title: 'CV Luciano',
       description:
-        'Artículo del portfolio (español). Topics: about, experience, skills, contact, projects, y un archivo por proyecto (kuatia, faciliter, bax, quarkid, servicios-ba, aubilities, seekitup, ipskynet). Sin topic lista los temas. No inventes lo que no esté en el markdown.',
+        'Artículo del portfolio (español). Topics: about, experience, skills, contact, projects, y un archivo por proyecto (kuatia, faciliter, bax, quarkid, servicios-ba, aubilities, seekitup, ipskynet, codigo). Sin topic lista los temas. No inventes lo que no esté en el markdown.',
       inputSchema: {
         topic: z
           .string()

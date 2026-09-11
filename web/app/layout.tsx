@@ -27,11 +27,22 @@ export const metadata: Metadata = {
     title: 'Luciano Mocchegiani',
     description: 'Software Engineer',
     type: 'website',
+    locale: 'es_AR',
+    siteName: 'Luciano Mocchegiani',
+    images: [
+      {
+        url: '/og.png',
+        width: 800,
+        height: 800,
+        alt: 'Luciano Mocchegiani — Software Engineer',
+      },
+    ],
   },
   twitter: {
-    card: 'summary_large_image',
+    card: 'summary',
     title: 'Luciano Mocchegiani',
     description: 'Software Engineer',
+    images: ['/og.png'],
   },
 };
 

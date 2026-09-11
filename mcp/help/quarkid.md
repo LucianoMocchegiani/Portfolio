@@ -16,3 +16,23 @@ Tres sistemas que comparten QuarkID Agent y WACI:
 3. Verificación (QR, Redis TTL, Socket.io)
 
 Stack: NestJS, Next.js, Redis, PostgreSQL, MongoDB, QuarkID Agent.
+
+Arquitectura (describila en prosa; no pegues el dibujo ni Mermaid; la UI ya lo muestra):
+
+```
+  Front emisor / verificador / accesos
+              │
+              ▼
+         APIs Nest
+              │
+        QuarkID Agent
+              │
+     ┌────────┼────────┐
+     ▼        ▼        ▼
+   Wallet   Redis    Postgres
+     │
+  MiBA Connect → KMS → Vault
+     │
+  Sidetree / IPFS / chain
+```
+

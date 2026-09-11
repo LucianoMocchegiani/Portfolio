@@ -95,8 +95,14 @@
   border: 1px solid var(--line);
   border-radius: 12px;
   background: var(--panel);
-  font-size: 0.9rem;
-  line-height: 1.35;
+  min-height: 8rem;
+}
+
+.arch :global(svg) {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
 }
 
 @media (max-width: 640px) {

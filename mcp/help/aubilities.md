@@ -9,3 +9,15 @@ Hice: núcleo funcional (registro, login, perfiles, archivos, paquetes, asistenc
 Impacto: modernización completa, arquitectura clara y mantenible. Logro: núcleo funcional completo del producto.
 
 Stack: React, MUI, Node.js, Express, AWS Cognito, Vite.
+
+Arquitectura (describila en prosa; no pegues el dibujo ni Mermaid; la UI ya lo muestra):
+
+```
+  Microfrontends (Vite)
+           │
+           ▼
+        APIs Node
+           │
+          AWS
+```
+

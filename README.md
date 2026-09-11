@@ -26,7 +26,7 @@ docker compose up --build
 
 El contenido del CV está en `mcp/help/*.md`. El chat público solo usa la tool `get_help`.
 
-Portadas de cards: `web/public/work/<slug>.jpg` (ver `web/public/work/README.md`). Si no hay archivo, se muestran las iniciales.
+Portadas de cards: `web/public/work/<slug>.png` o `.svg` (ver `web/public/work/README.md`). Si no hay archivo, se muestran las iniciales.
 
 ## Dominio (Cloudflare Tunnel)
 

@@ -8,4 +8,23 @@ Rol: Software Engineer. Stack: Next.js, NestJS, Flutter/React Native, PostgreSQL
 
 Qué construí: consola y landing, billing y API keys, issuer, verifier, wallet, flujos de oferta y presentación.
 
-Arquitectura: Wallet ↔ Web ↔ Billing / Issuer / Verifier ↔ PostgreSQL.
+Arquitectura (describila en prosa; no pegues el dibujo ni Mermaid; la UI ya lo muestra):
+
+```
+             ┌──────────┐
+             │  Wallet  │
+             └────┬─────┘
+                  │ OpenID4VC
+             ┌────▼─────┐
+             │   Web    │
+             └────┬─────┘
+                  │
+       ┌──────────┼──────────┐
+       ▼          ▼          ▼
+    Billing    Issuer    Verifier
+       │          │          │
+       └──────────┴────┬─────┘
+                       ▼
+                   PostgreSQL
+```
+

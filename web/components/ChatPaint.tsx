@@ -1,7 +1,8 @@
 'use client';
 
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { IconGitHub, IconLinkedIn, IconWhatsApp } from '@/components/BrandIcons';
 import { ProjectCover } from '@/components/ProjectCover';
 import { CONTACT, EXPERIENCE, PROJECTS } from '@/lib/work';
 import { skillGroups, type ChatWidget } from '@/lib/chat-paint';
@@ -116,13 +117,13 @@ export function RichText({ text }: { text: string }) {
   );
 }
 
-function ProjectCard({ slug }: { slug: string }) {
+function ProjectCard({ slug, appear }: { slug: string; appear?: boolean }) {
   const project = PROJECTS.find((item) => item.slug === slug);
   if (!project) {
     return null;
   }
   return (
-    <article className={styles.card}>
+    <article className={`${styles.card} ${appear ? styles.paintIn : ''}`}>
       <Link href={`/work/${project.slug}`} className={styles.cardHit}>
         <ProjectCover slug={slug} kind={project.kind} className={styles.cover} />
         <div className={styles.cardBody}>
@@ -133,15 +134,36 @@ function ProjectCard({ slug }: { slug: string }) {
       <div className={styles.cardLinks}>
         <Link href={`/work/${project.slug}`}>Ficha</Link>
         <a href={project.href} target="_blank" rel="noreferrer">
-          Sitio
+          {project.kind === 'repos' ? 'GitHub' : 'Sitio'}
         </a>
       </div>
     </article>
   );
 }
 
-function ProjectRail({ slugs }: { slugs: string[] }) {
+function ProjectRail({
+  slugs,
+  progressive,
+}: {
+  slugs: string[];
+  progressive?: boolean;
+}) {
   const railRef = useRef<HTMLDivElement>(null);
+  const [shown, setShown] = useState(progressive ? 0 : slugs.length);
+
+  useEffect(() => {
+    setShown(progressive ? 0 : slugs.length);
+  }, [progressive, slugs.join('|')]);
+
+  useEffect(() => {
+    if (!progressive || shown >= slugs.length) {
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      setShown((value) => value + 1);
+    }, shown === 0 ? 80 : 170);
+    return () => window.clearTimeout(timer);
+  }, [progressive, shown, slugs.length]);
 
   function scrollByCard(direction: -1 | 1): void {
     const node = railRef.current;
@@ -153,11 +175,13 @@ function ProjectRail({ slugs }: { slugs: string[] }) {
     node.scrollBy({ left: direction * step, behavior: 'smooth' });
   }
 
+  const visible = slugs.slice(0, shown);
+
   if (slugs.length <= 1) {
     return (
       <div className={styles.rail}>
-        {slugs.map((slug) => (
-          <ProjectCard key={slug} slug={slug} />
+        {visible.map((slug) => (
+          <ProjectCard key={slug} slug={slug} appear={progressive} />
         ))}
       </div>
     );
@@ -174,8 +198,8 @@ function ProjectRail({ slugs }: { slugs: string[] }) {
         ←
       </button>
       <div className={styles.rail} ref={railRef}>
-        {slugs.map((slug) => (
-          <ProjectCard key={slug} slug={slug} />
+        {visible.map((slug) => (
+          <ProjectCard key={slug} slug={slug} appear={progressive} />
         ))}
       </div>
       <button
@@ -190,21 +214,51 @@ function ProjectRail({ slugs }: { slugs: string[] }) {
   );
 }
 
-export function ChatWidgets({ widgets }: { widgets: ChatWidget[] }) {
+function paintStyle(index: number, progressive?: boolean): { animationDelay: string } | undefined {
+  if (!progressive) {
+    return undefined;
+  }
+  return { animationDelay: `${index * 120}ms` };
+}
+
+export function ChatWidgets({
+  widgets,
+  progressive,
+}: {
+  widgets: ChatWidget[];
+  progressive?: boolean;
+}) {
   return (
     <>
       {widgets.map((widget, index) => {
+        const paint = progressive ? styles.paintIn : '';
         if (widget.type === 'projects') {
-          return <ProjectRail key={`projects-${index}`} slugs={widget.slugs} />;
+          return (
+            <ProjectRail
+              key={`projects-${index}`}
+              slugs={widget.slugs}
+              progressive={progressive}
+            />
+          );
         }
         if (widget.type === 'project') {
-          return <ProjectRail key={`project-${widget.slug}-${index}`} slugs={[widget.slug]} />;
+          return (
+            <ProjectRail
+              key={`project-${widget.slug}-${index}`}
+              slugs={[widget.slug]}
+              progressive={progressive}
+            />
+          );
         }
         if (widget.type === 'skills') {
           return (
             <div key={`skills-${index}`} className={styles.skills}>
-              {skillGroups().map(([group, items]) => (
-                <div key={group}>
+              {skillGroups().map(([group, items], groupIndex) => (
+                <div
+                  key={group}
+                  className={paint}
+                  style={paintStyle(groupIndex, progressive)}
+                >
                   <p className={styles.skillGroup}>{group}</p>
                   <div className={styles.pills}>
                     {items.map((item) => (
@@ -219,8 +273,12 @@ export function ChatWidgets({ widgets }: { widgets: ChatWidget[] }) {
         if (widget.type === 'experience') {
           return (
             <ol key={`exp-${index}`} className={styles.jobs}>
-              {EXPERIENCE.map((item) => (
-                <li key={item.org}>
+              {EXPERIENCE.map((item, jobIndex) => (
+                <li
+                  key={item.org}
+                  className={paint}
+                  style={paintStyle(jobIndex, progressive)}
+                >
                   <strong>{item.org}</strong>
                   <span>
                     {item.role} · {item.dates}
@@ -232,24 +290,44 @@ export function ChatWidgets({ widgets }: { widgets: ChatWidget[] }) {
             </ol>
           );
         }
+        const rows = [
+          <span key="loc">{CONTACT.location}</span>,
+          <a key="wa" href={CONTACT.whatsappHref} target="_blank" rel="noreferrer">
+            <IconWhatsApp />
+            WhatsApp
+          </a>,
+          <a key="tel" href={CONTACT.phoneHref}>
+            Llamar · {CONTACT.phone}
+          </a>,
+          <a key="mail" href={`mailto:${CONTACT.email}`}>
+            {CONTACT.email}
+          </a>,
+          <a key="in" href={CONTACT.linkedin} target="_blank" rel="noreferrer">
+            <IconLinkedIn />
+            LinkedIn
+          </a>,
+          <a key="gh" href={CONTACT.github} target="_blank" rel="noreferrer">
+            <IconGitHub />
+            GitHub
+          </a>,
+          <a key="cal" href={CONTACT.calendar} target="_blank" rel="noreferrer">
+            Agendar reunión
+          </a>,
+        ];
         return (
           <div key={`contact-${index}`} className={styles.contact}>
-            <p>Contacto</p>
-            <span>{CONTACT.location}</span>
-            <a href={CONTACT.whatsappHref} target="_blank" rel="noreferrer">
-              WhatsApp · {CONTACT.phone}
-            </a>
-            <a href={CONTACT.phoneHref}>Llamar · {CONTACT.phone}</a>
-            <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
-            <a href={CONTACT.linkedin} target="_blank" rel="noreferrer">
-              LinkedIn
-            </a>
-            <a href={CONTACT.github} target="_blank" rel="noreferrer">
-              GitHub
-            </a>
-            <a href={CONTACT.calendar} target="_blank" rel="noreferrer">
-              Agendar reunión
-            </a>
+            <p className={paint} style={paintStyle(0, progressive)}>
+              Contacto
+            </p>
+            {rows.map((row, rowIndex) => (
+              <span
+                key={row.key}
+                className={paint}
+                style={paintStyle(rowIndex + 1, progressive)}
+              >
+                {row}
+              </span>
+            ))}
           </div>
         );
       })}

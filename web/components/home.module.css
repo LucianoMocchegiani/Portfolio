@@ -156,6 +156,25 @@
   color: var(--muted);
 }
 
+.socials {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.85rem 1.15rem;
+}
+
+.socials a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-decoration: none;
+}
+
+.socials a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+}
+
 .skillKey {
   display: inline-block;
   min-width: 8.5rem;

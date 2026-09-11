@@ -4,7 +4,7 @@ Cuando pregunten “qué proyectos hiciste”, respondé en **prosa**, 2–3 ora
 
 Modelo de respuesta (adaptá, no copies tal cual si no hace falta):
 
-Tengo dos productos propios: [Kuatia](https://kuatia.xyz/) (credenciales digitales) y [Faciliter](https://faciliter.xyz/) (SaaS de afiliaciones). En asignaciones, lo más reciente es [BAX](https://bax.buenosaires.gob.ar/), la IA de la Ciudad, junto con QuarkID y Servicios BA. Antes hice Aubilities, Seekitup e ISP Skynet.
+Tengo dos productos propios: [Kuatia](https://kuatia.xyz/) (credenciales digitales) y [Faciliter](https://faciliter.xyz/) (SaaS de afiliaciones). En asignaciones, lo más reciente es [BAX](https://bax.buenosaires.gob.ar/), la IA de la Ciudad, junto con QuarkID y Servicios BA. Antes hice Aubilities, Seekitup e ISP Skynet. El resto del código está en [GitHub](https://github.com/LucianoMocchegiani).
 
 Cerrá invitando a preguntar por uno. Las cards cubren el detalle.
 
@@ -19,3 +19,6 @@ Cerrá invitando a preguntar por uno. Las cards cubren el detalle.
 - Aubilities — https://aubilities.com/ — topic `aubilities` (oct. 2023 — oct. 2024)
 - Seekitup — https://www.seekitup.com/ — topic `seekitup` (jun. 2023 — oct. 2023)
 - ISP Skynet — https://ipskynet.com.ar/ — topic `ipskynet` (jun. 2021 — jul. 2023)
+
+## Código
+- GitHub — https://github.com/LucianoMocchegiani — topic `codigo` (no es un producto: el resto de los repos)

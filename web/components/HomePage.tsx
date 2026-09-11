@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { AskPanel } from '@/components/AskPanel';
+import { IconGitHub, IconLinkedIn, IconWhatsApp } from '@/components/BrandIcons';
 import { ProjectCover } from '@/components/ProjectCover';
 import {
   CONTACT,
@@ -86,17 +87,21 @@ export function HomePage() {
           <br />
           <a href={CONTACT.phoneHref}>{CONTACT.phone}</a>
           {' · '}
-          <a href={CONTACT.whatsappHref} target="_blank" rel="noreferrer">
-            WhatsApp
-          </a>
-          {' · '}
           <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
         </p>
-        <p>
-          <a href={CONTACT.linkedin}>LinkedIn</a>
-          {' · '}
-          <a href={CONTACT.github}>GitHub</a>
-          {' · '}
+        <p className={styles.socials}>
+          <a href={CONTACT.whatsappHref} target="_blank" rel="noreferrer">
+            <IconWhatsApp />
+            WhatsApp
+          </a>
+          <a href={CONTACT.linkedin} target="_blank" rel="noreferrer">
+            <IconLinkedIn />
+            LinkedIn
+          </a>
+          <a href={CONTACT.github} target="_blank" rel="noreferrer">
+            <IconGitHub />
+            GitHub
+          </a>
           <a href={CONTACT.calendar} target="_blank" rel="noreferrer">
             Agendar reunión
           </a>

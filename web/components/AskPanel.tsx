@@ -81,8 +81,10 @@ export function AskPanel({
                 {(() => {
                   const prev = chat.bubbles[index - 1];
                   const userText = prev?.role === 'user' ? prev.content : '';
+                  const liveLast =
+                    chat.streaming && index === chat.bubbles.length - 1;
                   const widgets = attachIntentWidgets(
-                    userText,
+                    liveLast ? '' : userText,
                     filterWidgetsOnProjectPage(
                       bubble.widgets ?? [],
                       pageProjectSlug,
@@ -105,7 +107,12 @@ export function AskPanel({
                           )}
                         </div>
                       ) : null}
-                      {widgets.length > 0 ? <ChatWidgets widgets={widgets} /> : null}
+                      {widgets.length > 0 ? (
+                        <ChatWidgets
+                          widgets={widgets}
+                          progressive={bubble.key.startsWith('asst-')}
+                        />
+                      ) : null}
                     </>
                   );
                 })()}

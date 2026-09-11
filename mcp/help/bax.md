@@ -7,3 +7,21 @@ BAX es la IA de la Ciudad: experiencia conversacional (texto, voz, imagen) para 
 Rol: Software Engineer. Stack: Flutter, NestJS, QuarkID, WACI, Redis, PostgreSQL.
 
 Qué toqué: app (documentos, identidad, asistente), flujos QR BAX, integración con emisor/verificador/accesos del ecosistema Quark.
+
+Arquitectura (describila en prosa; no pegues el dibujo ni Mermaid; la UI ya lo muestra):
+
+```
+        Ciudadano
+            │
+        ┌───▼───┐
+        │  BAX  │  app Flutter
+        └───┬───┘
+            │
+     ┌──────┼──────┐
+     ▼      ▼      ▼
+  MiBA   Quark   Servicios
+  auth   Agent      BA
+            │
+     emisor / verificador / accesos
+```
+

@@ -6,6 +6,7 @@ import {
   projectCoverSources,
   projectDiscTone,
   projectLook,
+  workKindLabel,
   type WorkKind,
 } from '@/lib/work';
 import styles from '@/components/cover.module.css';
@@ -45,7 +46,7 @@ export function ProjectCover({
           <span className={`${styles.discMark} ${markClassName ?? ''}`}>{look.mark}</span>
         )}
       </span>
-      <em className={kindClassName}>{kind === 'propio' ? 'Propio' : 'Asignado'}</em>
+      <em className={kindClassName}>{workKindLabel(kind)}</em>
     </div>
   );
 }

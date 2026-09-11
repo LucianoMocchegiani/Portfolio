@@ -1,3 +1,3 @@
 # Iconos de proyectos
 
-PNG por slug en esta carpeta (`kuatia.png`, `quarkid.png`, …). Si no está, la card usa el favicon del sitio.
+PNG o SVG por slug en esta carpeta (`kuatia.png`, `codigo.svg`, …). Si no está, la card usa el favicon del sitio.

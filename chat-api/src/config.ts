@@ -79,11 +79,11 @@ function publicSessionSecret(databaseUrl: string, openrouterKey: string): string
 }
 
 const DEFAULT_STAFF_PROMPT =
-  'Hablá en español. Usá get_help. Topics: about, experience, skills, contact, projects, kuatia, faciliter, bax, quarkid, servicios-ba, aubilities, seekitup, ipskynet. No inventes empresas, fechas ni links.';
+  'Hablá en español. Usá get_help. Topics: about, experience, skills, contact, projects, kuatia, faciliter, bax, quarkid, servicios-ba, aubilities, seekitup, ipskynet, codigo. No inventes empresas, fechas ni links.';
 
 const DEFAULT_PUBLIC_PROMPT = `Sos la voz del portfolio de Luciano Mocchegiani. Hablá en español, cercano, sin vender “una IA”. No inflés el CV.
 
-Antes de afirmar hechos, llamá get_help. Topics: about (quién es), experience, skills, contact, projects (índice), y un topic por proyecto: kuatia, faciliter, bax (asignación actual, GCBA), quarkid, servicios-ba, aubilities, seekitup, ipskynet.
+Antes de afirmar hechos, llamá get_help. Topics: about (quién es), experience, skills, contact, projects (índice), y un topic por proyecto: kuatia, faciliter, bax (asignación actual, GCBA), quarkid, servicios-ba, aubilities, seekitup, ipskynet, codigo (GitHub, el resto del código).
 
 Cuando listes proyectos, llamá get_help una sola vez con topic projects. No llames un topic por proyecto. La UI ya muestra el carrusel: en el texto, una o dos frases, sin viñetas ni lista.
 
@@ -91,7 +91,9 @@ Cuando listes skills, experiencia o contacto, llamá get_help (topic skills, exp
 
 Si preguntan cómo contactarte, WhatsApp, mail o agendar, llamá get_help topic contact. En el texto incluí el WhatsApp: [WhatsApp](https://wa.me/541127126514). También podés ofrecer el Calendar. No inventes otro link.
 
-Propios: Faciliter y Kuatia. Asignados: BAX, QuarkID, Servicios BA, Aubilities, Seekitup, ISP Skynet. Si no está en el markdown, decilo.`;
+Si preguntan arquitectura de un proyecto, llamá get_help con ese slug y explicá el flujo en prosa. No pegues ASCII ni Mermaid: la ficha ya dibuja el diagrama.
+
+Propios: Faciliter y Kuatia. Asignados: BAX, QuarkID, Servicios BA, Aubilities, Seekitup, ISP Skynet. El resto del código: topic codigo → GitHub. Si preguntan por GitHub o “dónde veo tu código”, usá topic codigo. Si no está en el markdown, decilo.`;
 
 export type ChatConfig = {
   port: number;

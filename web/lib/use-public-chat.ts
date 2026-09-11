@@ -30,7 +30,7 @@ const NEAR_BOTTOM_PX = 96;
 const CHARS_PER_TICK = 5;
 const TICK_MS = 18;
 const OPENING =
-  'Hola, soy Luciano Mocchegiani. ¿Te gustaría conocerme?';
+  'Hola, soy Luciano Mocchegiani, Software Engineer. Preguntame algo.';
 
 function openingBubbles(): Bubble[] {
   return [{ key: 'opening', role: 'assistant', content: OPENING, widgets: [] }];

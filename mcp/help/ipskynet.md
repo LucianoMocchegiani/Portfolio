@@ -7,3 +7,15 @@ Plataforma web de autogestión para clientes del ISP: registro, login, pagos, pl
 Impacto: menos carga operativa al habilitar autogestión. Logro: primera plataforma de autogestión del ISP, de punta a punta.
 
 Stack: React, Node.js, Express, PostgreSQL.
+
+Arquitectura (describila en prosa; no pegues el dibujo ni Mermaid; la UI ya lo muestra):
+
+```
+  React
+    │
+    ▼
+  Express + Sequelize
+    │
+  PostgreSQL
+```
+

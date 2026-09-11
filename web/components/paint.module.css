@@ -215,8 +215,36 @@
 
 .contact a {
   color: var(--ink);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.contact a:hover {
   text-decoration: underline;
   text-underline-offset: 0.12em;
+}
+
+@keyframes paintIn {
+  from {
+    opacity: 0;
+    transform: translateY(0.65rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.paintIn {
+  animation: paintIn 0.42s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .paintIn {
+    animation: none;
+  }
 }
 
 @media (max-width: 640px) {

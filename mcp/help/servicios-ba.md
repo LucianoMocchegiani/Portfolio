@@ -11,3 +11,22 @@ Front: ciudadano (React/Vite) y backoffice shell con microfrontends.
 Auth: ciudadanos MIBA (OIDC); administradores Active Directory.
 
 Impacto: mayor mantenibilidad por patrones compartidos; menos tiempo de desarrollo al optimizar servicios y sacar fallas estructurales.
+
+Arquitectura (describila en prosa; no pegues el dibujo ni Mermaid; la UI ya lo muestra):
+
+```
+  Ciudadano (React)     Backoffice (microfrontends)
+           │                        │
+           └──────────┬─────────────┘
+                      ▼
+              backoffice-backend
+                      │
+              ┌───────┴───────┐
+              ▼               ▼
+             core         connectors
+              │               │
+           Postgres        Boti / etc.
+              ▼
+         queue-manager (Kafka)
+```
+
