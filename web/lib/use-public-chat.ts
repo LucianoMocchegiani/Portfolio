@@ -18,6 +18,7 @@ import {
   widgetsFromAssistantText,
   type ChatWidget,
 } from '@/lib/chat-paint';
+import { stripLeakedToolTalk, visibleAssistantStream } from '@/lib/chat-sanitize';
 
 export type Bubble = {
   key: string;
@@ -60,7 +61,7 @@ function bubblesFromHistory(rows: ChatMessage[]): Bubble[] {
       out.push({
         key: row.id,
         role: 'assistant',
-        content: row.content,
+        content: stripLeakedToolTalk(row.content),
         widgets: mergeWidgets(pending, widgetsFromAssistantText(row.content)),
       });
       pending = null;
@@ -103,6 +104,8 @@ export function usePublicChat() {
   const tickRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const heldWidgetsRef = useRef<ChatWidget[]>([]);
   const sseOpenRef = useRef(false);
+  const rawAssistantRef = useRef('');
+  const emittedVisibleRef = useRef('');
 
   useEffect(() => {
     conversationIdRef.current = conversationId;
@@ -230,6 +233,8 @@ export function usePublicChat() {
       queueRef.current = '';
       heldWidgetsRef.current = [];
       sseOpenRef.current = true;
+      rawAssistantRef.current = '';
+      emittedVisibleRef.current = '';
       setBubbles((prev) => [
         ...prev,
         { key: `user-${Date.now()}`, role: 'user', content: shown },
@@ -255,7 +260,26 @@ export function usePublicChat() {
               if (!delta) {
                 return;
               }
-              queueRef.current += delta;
+              rawAssistantRef.current += delta;
+              const visible = visibleAssistantStream(rawAssistantRef.current);
+              const emitted = emittedVisibleRef.current;
+              if (
+                visible.length < emitted.length ||
+                !visible.startsWith(emitted)
+              ) {
+                emittedVisibleRef.current = visible;
+                queueRef.current = '';
+                setBubbles((prev) =>
+                  patchLastAssistant(prev, { content: visible }),
+                );
+                return;
+              }
+              const extra = visible.slice(emitted.length);
+              emittedVisibleRef.current = visible;
+              if (!extra) {
+                return;
+              }
+              queueRef.current += extra;
               if (!tickRef.current) {
                 drainQueue();
               }
@@ -291,6 +315,8 @@ export function usePublicChat() {
     queueRef.current = '';
     heldWidgetsRef.current = [];
     sseOpenRef.current = false;
+    rawAssistantRef.current = '';
+    emittedVisibleRef.current = '';
     setStreaming(false);
     setText('');
     stickRef.current = true;
@@ -303,18 +329,11 @@ export function usePublicChat() {
       clearTimeout(tickRef.current);
       tickRef.current = null;
     }
-    const rest = queueRef.current;
     queueRef.current = '';
     sseOpenRef.current = false;
-    if (rest) {
-      setBubbles((prev) => {
-        const copy = [...prev];
-        const last = copy[copy.length - 1];
-        if (last?.role === 'assistant') {
-          copy[copy.length - 1] = { ...last, content: last.content + rest };
-        }
-        return copy;
-      });
+    const visible = visibleAssistantStream(rawAssistantRef.current);
+    if (visible) {
+      setBubbles((prev) => patchLastAssistant(prev, { content: visible }));
     }
     flushHeldWidgets();
   }, [flushHeldWidgets]);

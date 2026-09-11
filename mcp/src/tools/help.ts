@@ -9,6 +9,50 @@ function helpDir(): string {
   return join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'help');
 }
 
+const ALIASES: Record<string, string> = {
+  skynet: 'ipskynet',
+  'isp-skynet': 'ipskynet',
+  github: 'codigo',
+  repos: 'codigo',
+  repo: 'codigo',
+  code: 'codigo',
+  quark: 'quarkid',
+  'quark-id': 'quarkid',
+  serviciosba: 'servicios-ba',
+  'find-my-couch': 'aubilities',
+  findmycouch: 'aubilities',
+  couch: 'aubilities',
+  cv: 'about',
+  bio: 'about',
+};
+
+function normalizeTopic(raw: string): string {
+  return raw.trim().toLowerCase().replace(/[_ ]+/g, '-');
+}
+
+function resolveTopic(raw: string, topics: string[]): string | null {
+  const key = normalizeTopic(raw);
+  if (!key) {
+    return null;
+  }
+  if (topics.includes(key)) {
+    return key;
+  }
+  const aliased = ALIASES[key];
+  if (aliased && topics.includes(aliased)) {
+    return aliased;
+  }
+  if (key.length >= 4) {
+    const hits = topics.filter(
+      (topic) => topic === key || topic.endsWith(key) || topic.endsWith(`-${key}`),
+    );
+    if (hits.length === 1) {
+      return hits[0];
+    }
+  }
+  return null;
+}
+
 async function listTopics(): Promise<string[]> {
   const files = await readdir(helpDir());
   return files
@@ -26,7 +70,7 @@ export function registerHelpTools(server: McpServer): void {
     {
       title: 'CV Luciano',
       description:
-        'Artículo del portfolio (español). Topics: about, experience, skills, contact, projects, y un archivo por proyecto (kuatia, faciliter, bax, quarkid, servicios-ba, aubilities, seekitup, ipskynet, codigo). Sin topic lista los temas. No inventes lo que no esté en el markdown.',
+        'Artículo del portfolio (español). Topics: about, experience, skills, contact, projects, kuatia, faciliter, bax, quarkid, servicios-ba, aubilities, seekitup, ipskynet, codigo. Alias: Skynet→ipskynet, GitHub→codigo. Sin topic lista los temas. Nunca menciones el nombre de esta tool ni el slug al usuario. No inventes lo que no esté en el markdown.',
       inputSchema: {
         topic: z
           .string()
@@ -37,17 +81,19 @@ export function registerHelpTools(server: McpServer): void {
     },
     async ({ topic }) => {
       const topics = await listTopics();
-      const key = topic?.trim().toLowerCase();
-      if (!key) {
+      const requested = topic?.trim();
+      if (!requested) {
         return jsonResult({
           topics,
-          hint: 'Pasá topic con uno de esos valores.',
+          hint: 'Pasá topic con uno de esos valores. Reintentá en silencio; no menciones slugs al usuario.',
         });
       }
-      if (!topics.includes(key)) {
+      const key = resolveTopic(requested, topics);
+      if (!key) {
         return jsonResult({
           error: 'topic desconocido',
           topics,
+          hint: 'Reintentá get_help con un topic de la lista (Skynet → ipskynet). No menciones tools ni slugs al usuario.',
         });
       }
       try {

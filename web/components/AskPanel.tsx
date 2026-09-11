@@ -3,6 +3,7 @@
 import type { FormEvent, KeyboardEvent } from 'react';
 import { ChatWidgets, RichText } from '@/components/ChatPaint';
 import { filterWidgetsOnProjectPage, textWithoutPaintedProjects, attachIntentWidgets } from '@/lib/chat-paint';
+import { stripLeakedToolTalk } from '@/lib/chat-sanitize';
 import type { usePublicChat } from '@/lib/use-public-chat';
 import styles from '@/components/ask.module.css';
 
@@ -91,7 +92,10 @@ export function AskPanel({
                       userText,
                     ),
                   );
-                  const shown = textWithoutPaintedProjects(bubble.content, widgets);
+                  const shown = textWithoutPaintedProjects(
+                    stripLeakedToolTalk(bubble.content),
+                    widgets,
+                  );
                   const pending =
                     chat.streaming &&
                     index === chat.bubbles.length - 1 &&

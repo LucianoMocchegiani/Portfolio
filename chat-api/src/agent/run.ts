@@ -13,6 +13,7 @@ import {
   toJsonValue,
   touchConversation,
 } from '../messages/persist.js';
+import { stripLeakedToolTalk } from './sanitize.js';
 import { buildModelMessages, shrinkToolContent } from './window.js';
 
 type LooseTool = {
@@ -57,14 +58,15 @@ function toolOutputOf(item: LooseTool): unknown {
 }
 
 function assistantTextOf(text: string | undefined, steps: LooseStep[]): string {
-  if (text && text.trim()) {
-    return text.trim();
-  }
-  return steps
-    .map((step) => (typeof step.text === 'string' ? step.text.trim() : ''))
-    .filter(Boolean)
-    .join('\n')
-    .trim();
+  const raw =
+    text && text.trim()
+      ? text.trim()
+      : steps
+          .map((step) => (typeof step.text === 'string' ? step.text.trim() : ''))
+          .filter(Boolean)
+          .join('\n')
+          .trim();
+  return stripLeakedToolTalk(raw);
 }
 
 async function persistAgentTurn(
