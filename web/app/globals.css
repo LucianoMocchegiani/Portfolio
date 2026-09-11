@@ -1,14 +1,15 @@
 :root {
-  --bg: #ffffff;
-  --ink: #111111;
-  --muted: #6b6b6b;
-  --line: #e4e4e4;
-  --panel: #f5f5f5;
-  --accent: #111111;
-  --accent-ink: #ffffff;
+  --bg: #ecece8;
+  --ink: #161616;
+  --muted: #5e5e5e;
+  --line: #d4d4cf;
+  --panel: #e3e3de;
+  --accent: #161616;
+  --accent-ink: #f4f4f0;
   --danger: #b91c1c;
   --content: 64rem;
-  --scroll: #c4c4c4;
+  --scroll: #b5b5b0;
+  --header-h: 3rem;
   color-scheme: light;
 }
 
@@ -26,21 +27,25 @@ html[data-theme='dark'] {
 }
 
 html {
-  font-size: 18px;
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 html,
 body {
   margin: 0;
-  min-height: 100%;
+  min-height: 100dvh;
 }
 
 body {
+  display: flex;
+  flex-direction: column;
   color: var(--ink);
   background: var(--bg);
   font-family: var(--font-body), 'IBM Plex Sans', sans-serif;
-  font-size: 1.05rem;
-  line-height: 1.55;
+  font-size: 1rem;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -53,11 +58,13 @@ a {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 1.1rem max(1.25rem, env(safe-area-inset-left)) 0;
+  height: var(--header-h);
+  padding: 0 max(1.25rem, env(safe-area-inset-left));
   max-width: var(--content);
   width: 100%;
   box-sizing: border-box;
   margin: 0 auto;
+  flex: none;
 }
 
 .themeToggle {
@@ -102,6 +109,6 @@ a {
 
 @media (max-width: 640px) {
   .top {
-    padding: 1rem 1rem 0;
+    padding: 0 1rem;
   }
 }

@@ -10,11 +10,13 @@ export function ChatBubble({
   placeholder,
   suggestions,
   prefixWire,
+  pageProjectSlug,
 }: {
   title: string;
   placeholder: string;
   suggestions: string[];
   prefixWire?: string;
+  pageProjectSlug?: string;
 }) {
   const chat = usePublicChat();
   const [open, setOpen] = useState(false);
@@ -48,6 +50,7 @@ export function ChatBubble({
             placeholder={placeholder}
             suggestions={suggestions}
             prefixWire={prefixWire}
+            pageProjectSlug={pageProjectSlug}
             variant="drawer"
             className={styles.askFill}
           />

@@ -1,0 +1,1 @@
+cloudflared tunnel --origincert C:\Users\User\.cloudflared\cert.pem route dns luciano lucianomocchegiani.xyz; cloudflared tunnel --origincert C:\Users\User\.cloudflared\cert.pem route dns luciano www.lucianomocchegiani.xyz; cloudflared tunnel --origincert C:\Users\User\.cloudflared\cert.pem route dns luciano chat.lucianomocchegiani.xyz

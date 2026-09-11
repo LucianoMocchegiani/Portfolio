@@ -123,16 +123,18 @@ function ProjectCard({ slug }: { slug: string }) {
   }
   return (
     <article className={styles.card}>
-      <ProjectCover slug={slug} kind={project.kind} className={styles.cover} />
-      <div className={styles.cardBody}>
-        <h3>{project.name}</h3>
-        <p>{project.tagline}</p>
-        <div className={styles.cardLinks}>
-          <Link href={`/work/${project.slug}`}>Ficha</Link>
-          <a href={project.href} target="_blank" rel="noreferrer">
-            Sitio
-          </a>
+      <Link href={`/work/${project.slug}`} className={styles.cardHit}>
+        <ProjectCover slug={slug} kind={project.kind} className={styles.cover} />
+        <div className={styles.cardBody}>
+          <h3>{project.name}</h3>
+          <p>{project.tagline}</p>
         </div>
+      </Link>
+      <div className={styles.cardLinks}>
+        <Link href={`/work/${project.slug}`}>Ficha</Link>
+        <a href={project.href} target="_blank" rel="noreferrer">
+          Sitio
+        </a>
       </div>
     </article>
   );
@@ -234,7 +236,10 @@ export function ChatWidgets({ widgets }: { widgets: ChatWidget[] }) {
           <div key={`contact-${index}`} className={styles.contact}>
             <p>Contacto</p>
             <span>{CONTACT.location}</span>
-            <a href={CONTACT.phoneHref}>{CONTACT.phone}</a>
+            <a href={CONTACT.whatsappHref} target="_blank" rel="noreferrer">
+              WhatsApp · {CONTACT.phone}
+            </a>
+            <a href={CONTACT.phoneHref}>Llamar · {CONTACT.phone}</a>
             <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
             <a href={CONTACT.linkedin} target="_blank" rel="noreferrer">
               LinkedIn

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { AskPanel } from '@/components/AskPanel';
+import { ProjectCover } from '@/components/ProjectCover';
 import {
   CONTACT,
   EXPERIENCE,
@@ -19,16 +20,14 @@ export function HomePage() {
 
   return (
     <div className={styles.page}>
-      <section className={styles.hero}>
-        <p className={styles.mark}>LM</p>
-        <h1>Luciano Mocchegiani</h1>
-        <p className={styles.role}>Software Engineer</p>
-        <h2 className={styles.askTitle}>¿Qué querés saber?</h2>
+      <h1 className={styles.srOnly}>Luciano Mocchegiani</h1>
+      <section className={styles.hero} aria-label="Chat">
         <AskPanel
           chat={chat}
           title=""
           placeholder="Preguntame cualquier cosa sobre mi trabajo…"
           suggestions={HOME_QUESTIONS}
+          variant="home"
         />
       </section>
 
@@ -38,6 +37,7 @@ export function HomePage() {
           {featured.map((item) => (
             <li key={item.slug}>
               <Link href={`/work/${item.slug}`} className={styles.card}>
+                <ProjectCover slug={item.slug} kind={item.kind} className={styles.cardCover} />
                 <span className={styles.cardName}>{item.name}</span>
                 <span className={styles.cardTag}>{item.tagline}</span>
               </Link>
@@ -85,6 +85,10 @@ export function HomePage() {
           {CONTACT.location}
           <br />
           <a href={CONTACT.phoneHref}>{CONTACT.phone}</a>
+          {' · '}
+          <a href={CONTACT.whatsappHref} target="_blank" rel="noreferrer">
+            WhatsApp
+          </a>
           {' · '}
           <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
         </p>

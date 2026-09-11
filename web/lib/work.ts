@@ -253,8 +253,8 @@ export const PROJECTS: Project[] = [
   },
   {
     slug: 'ipskynet',
-    name: 'ISP Skynet',
-    tagline: 'Gestión de usuarios y pagos de un ISP',
+    name: 'Skynet',
+    tagline: 'Proveedor de internet',
     kind: 'asignado',
     href: 'https://ipskynet.com.ar/',
     role: 'Full Stack Developer — jun. 2021 — jul. 2023',
@@ -296,8 +296,52 @@ export function projectLook(slug: string): { mark: string } {
   return PROJECT_LOOK[slug] ?? { mark: slug.slice(0, 2).toUpperCase() };
 }
 
+export function projectIconSrc(href: string): string {
+  try {
+    const hostname = new URL(href).hostname;
+    return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(hostname)}&sz=128`;
+  } catch {
+    return '';
+  }
+}
+
+const PROJECT_COVER: Record<string, string> = {
+  kuatia: '/work/kuatia.png',
+  quarkid: '/work/quarkid.png',
+  faciliter: '/work/faciliter.png',
+  'servicios-ba': '/work/servicios-ba.svg',
+  ipskynet: '/work/ipskynet.svg',
+};
+
+const PROJECT_DISC: Record<string, 'black' | 'white'> = {
+  faciliter: 'black',
+  kuatia: 'black',
+  seekitup: 'black',
+  bax: 'white',
+  quarkid: 'white',
+  aubilities: 'white',
+  ipskynet: 'white',
+  'servicios-ba': 'white',
+};
+
+export function projectDiscTone(slug: string): 'black' | 'white' {
+  return PROJECT_DISC[slug] ?? 'white';
+}
+
+export function projectCoverSources(slug: string, href?: string): string[] {
+  const local = PROJECT_COVER[slug];
+  if (local) {
+    return [local];
+  }
+  if (!href) {
+    return [];
+  }
+  const favicon = projectIconSrc(href);
+  return favicon ? [favicon] : [];
+}
+
 export function projectCoverSrc(slug: string): string {
-  return `/work/${slug}.jpg`;
+  return `/work/${slug}.png`;
 }
 
 export const EXPERIENCE = [
@@ -356,6 +400,7 @@ export const CONTACT = {
   location: 'Buenos Aires, Argentina',
   phone: '+54 11 2712-6514',
   phoneHref: 'tel:+541127126514',
+  whatsappHref: 'https://wa.me/541127126514',
   email: 'lucianomocchegiani@gmail.com',
   linkedin: 'https://www.linkedin.com/in/luciano-mocchegiani',
   github: 'https://github.com/LucianoMocchegiani',

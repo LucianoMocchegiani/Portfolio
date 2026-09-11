@@ -50,6 +50,7 @@ export function ProjectView({ project }: { project: Project }) {
         placeholder="Preguntame lo que quieras…"
         suggestions={project.questions}
         prefixWire={prefix}
+        pageProjectSlug={project.slug}
       />
     </>
   );

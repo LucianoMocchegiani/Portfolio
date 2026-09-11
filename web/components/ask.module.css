@@ -16,9 +16,91 @@
   padding: 0.85rem 1rem 1rem;
 }
 
+.threadShell {
+  position: relative;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.drawer .threadShell {
+  flex: 1;
+}
+
 .drawer .thread {
   flex: 1;
   max-height: none;
+}
+
+.home {
+  flex: 1 1 auto;
+  min-height: 0;
+  gap: 0.55rem;
+}
+
+.home .threadShell {
+  flex: 1 1 auto;
+  min-height: 8rem;
+}
+
+.home .thread {
+  flex: 1 1 auto;
+  min-height: 8rem;
+  max-height: none;
+}
+
+.home .chips {
+  flex: none;
+  justify-content: center;
+}
+
+.home .composer {
+  flex: none;
+}
+
+@media (max-width: 640px) {
+  .home .chips {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .home .chips::-webkit-scrollbar {
+    display: none;
+  }
+
+  .home .chip {
+    flex: none;
+    white-space: nowrap;
+  }
+}
+
+.fadeTop,
+.fadeBottom {
+  position: absolute;
+  left: 0;
+  right: 10px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.fadeTop {
+  top: 0;
+  height: 3.5rem;
+  background: linear-gradient(
+    to bottom,
+    var(--bg) 0%,
+    color-mix(in srgb, var(--bg) 78%, transparent) 42%,
+    transparent 100%
+  );
+}
+
+.fadeBottom {
+  bottom: 0;
+  height: 2.25rem;
+  background: linear-gradient(to top, var(--bg) 0%, transparent 100%);
 }
 
 .kicker {
@@ -40,6 +122,26 @@
   scrollbar-color: var(--scroll) transparent;
 }
 
+.threadOpening {
+  justify-content: center;
+  align-items: center;
+}
+
+.threadOpening .assistant {
+  align-self: center;
+  text-align: center;
+  max-width: min(28rem, 92%);
+  border: 0;
+  background: transparent;
+  font-size: 1.2rem;
+  line-height: 1.45;
+}
+
+.threadOpening :global(.md),
+.threadOpening :global(.md p) {
+  text-align: center;
+}
+
 .thread::-webkit-scrollbar {
   width: 8px;
 }
@@ -52,7 +154,7 @@
 .hint {
   margin: 0;
   color: var(--muted);
-  font-size: 1.05rem;
+  font-size: 0.95rem;
 }
 
 .assistantTurn {
@@ -68,7 +170,7 @@
   padding: 0.7rem 0.95rem;
   border-radius: 16px;
   line-height: 1.45;
-  font-size: 1.08rem;
+  font-size: 1rem;
 }
 
 .user {
@@ -121,6 +223,27 @@
   cursor: default;
 }
 
+.newChat {
+  margin-left: auto;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 0.4rem 0.65rem;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.88rem;
+}
+
+.newChat:hover:not(:disabled) {
+  color: var(--ink);
+}
+
+.newChat:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
 .composer {
   display: flex;
   align-items: center;
@@ -166,5 +289,25 @@
 
   .composer {
     padding-left: 0.85rem;
+  }
+
+  .home .chip {
+    padding: 0.32rem 0.65rem;
+    font-size: 0.82rem;
+  }
+}
+
+@media (max-height: 700px) {
+  .home {
+    gap: 0.4rem;
+  }
+
+  .home .thread {
+    gap: 0.55rem;
+  }
+
+  .chip {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.82rem;
   }
 }

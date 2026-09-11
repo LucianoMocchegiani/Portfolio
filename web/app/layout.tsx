@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import Link from 'next/link';
 import { IBM_Plex_Sans } from 'next/font/google';
 import { ThemeToggle } from '@/components/ThemeToggle';
@@ -13,6 +13,11 @@ const body = IBM_Plex_Sans({
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3003';
 
 const themeBoot = `(function(){try{if(localStorage.getItem('lm-theme')==='dark')document.documentElement.setAttribute('data-theme','dark')}catch(e){}})()`;
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

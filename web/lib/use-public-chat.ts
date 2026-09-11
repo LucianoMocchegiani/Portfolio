@@ -26,6 +26,16 @@ export type Bubble = {
   widgets?: ChatWidget[];
 };
 
+const NEAR_BOTTOM_PX = 96;
+const CHARS_PER_TICK = 5;
+const TICK_MS = 18;
+const OPENING =
+  'Hola, soy Luciano Mocchegiani. ¿Te gustaría conocerme?';
+
+function openingBubbles(): Bubble[] {
+  return [{ key: 'opening', role: 'assistant', content: OPENING, widgets: [] }];
+}
+
 function statusMessage(error: unknown): string {
   if (error instanceof ChatClientError) {
     return error.message;
@@ -73,6 +83,10 @@ function patchLastAssistant(
   return next;
 }
 
+function isNearBottom(el: HTMLElement): boolean {
+  return el.scrollHeight - el.scrollTop - el.clientHeight < NEAR_BOTTOM_PX;
+}
+
 export function usePublicChat() {
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [bubbles, setBubbles] = useState<Bubble[]>([]);
@@ -84,6 +98,11 @@ export function usePublicChat() {
   const threadRef = useRef<HTMLDivElement>(null);
   const conversationIdRef = useRef<string | null>(null);
   const streamingRef = useRef(false);
+  const stickRef = useRef(true);
+  const queueRef = useRef('');
+  const tickRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const heldWidgetsRef = useRef<ChatWidget[]>([]);
+  const sseOpenRef = useRef(false);
 
   useEffect(() => {
     conversationIdRef.current = conversationId;
@@ -93,12 +112,76 @@ export function usePublicChat() {
     streamingRef.current = streaming;
   }, [streaming]);
 
-  useEffect(() => {
+  const scrollIfStuck = useCallback(() => {
     const el = threadRef.current;
-    if (el) {
+    if (el && stickRef.current) {
       el.scrollTop = el.scrollHeight;
     }
-  }, [bubbles, streaming]);
+  }, []);
+
+  const flushHeldWidgets = useCallback(() => {
+    if (sseOpenRef.current || queueRef.current.length > 0) {
+      return;
+    }
+    const held = heldWidgetsRef.current;
+    if (held.length === 0) {
+      return;
+    }
+    heldWidgetsRef.current = [];
+    setBubbles((prev) => {
+      const last = [...prev].reverse().find((item) => item.role === 'assistant');
+      return patchLastAssistant(prev, {
+        widgets: mergeWidgets(null, [...(last?.widgets ?? []), ...held]),
+      });
+    });
+  }, []);
+
+  const drainQueue = useCallback(() => {
+    if (tickRef.current) {
+      clearTimeout(tickRef.current);
+      tickRef.current = null;
+    }
+    const chunk = queueRef.current.slice(0, CHARS_PER_TICK);
+    if (!chunk) {
+      flushHeldWidgets();
+      return;
+    }
+    queueRef.current = queueRef.current.slice(CHARS_PER_TICK);
+    setBubbles((prev) => {
+      const copy = [...prev];
+      const last = copy[copy.length - 1];
+      if (last?.role === 'assistant') {
+        copy[copy.length - 1] = { ...last, content: last.content + chunk };
+      }
+      return copy;
+    });
+    tickRef.current = setTimeout(drainQueue, TICK_MS);
+  }, [flushHeldWidgets]);
+
+  useEffect(() => {
+    scrollIfStuck();
+  }, [bubbles, streaming, scrollIfStuck]);
+
+  useEffect(() => {
+    const el = threadRef.current;
+    if (!el) {
+      return;
+    }
+    const node = el;
+    function onScroll(): void {
+      stickRef.current = isNearBottom(node);
+    }
+    node.addEventListener('scroll', onScroll, { passive: true });
+    return () => node.removeEventListener('scroll', onScroll);
+  }, [ready]);
+
+  useEffect(() => {
+    return () => {
+      if (tickRef.current) {
+        clearTimeout(tickRef.current);
+      }
+    };
+  }, []);
 
   const boot = useCallback(async (fresh: boolean) => {
     setError(null);
@@ -110,7 +193,7 @@ export function usePublicChat() {
       setChatAccessToken(session.token);
       setConversationId(session.conversation.id);
       const rows = await listChatMessages(session.conversation.id);
-      setBubbles(bubblesFromHistory(rows));
+      setBubbles(rows.length === 0 ? openingBubbles() : bubblesFromHistory(rows));
       setReady(true);
     } catch (caught) {
       if (
@@ -133,70 +216,108 @@ export function usePublicChat() {
     };
   }, [boot]);
 
-  const send = useCallback(async (display: string, wire?: string) => {
-    const shown = display.trim();
-    const payload = (wire ?? display).trim();
-    const id = conversationIdRef.current;
-    if (!shown || !payload || !id || streamingRef.current) {
-      return;
-    }
-    setError(null);
-    setText('');
-    setBubbles((prev) => [
-      ...prev,
-      { key: `user-${Date.now()}`, role: 'user', content: shown },
-      { key: `asst-${Date.now()}`, role: 'assistant', content: '', widgets: [] },
-    ]);
-    setStreaming(true);
-    const controller = new AbortController();
-    abortRef.current = controller;
-    try {
-      await streamChatTurn(
-        id,
-        payload,
-        {
-          onToolStart: () => undefined,
-          onToolDone: (_toolCallId, _toolName, output) => {
-            const widget = widgetFromToolOutput(output);
-            if (!widget) {
-              return;
-            }
-            setBubbles((prev) => {
-              const last = [...prev].reverse().find((item) => item.role === 'assistant');
-              const merged = mergeWidgets(widget, last?.widgets ?? []);
-              return patchLastAssistant(prev, { widgets: merged });
-            });
-          },
-          onTextDelta: (delta) => {
-            setBubbles((prev) => {
-              const copy = [...prev];
-              const last = copy[copy.length - 1];
-              if (last?.role === 'assistant') {
-                copy[copy.length - 1] = {
-                  ...last,
-                  content: last.content + delta,
-                };
+  const send = useCallback(
+    async (display: string, wire?: string) => {
+      const shown = display.trim();
+      const payload = (wire ?? display).trim();
+      const id = conversationIdRef.current;
+      if (!shown || !payload || !id || streamingRef.current) {
+        return;
+      }
+      setError(null);
+      setText('');
+      stickRef.current = true;
+      queueRef.current = '';
+      heldWidgetsRef.current = [];
+      sseOpenRef.current = true;
+      setBubbles((prev) => [
+        ...prev,
+        { key: `user-${Date.now()}`, role: 'user', content: shown },
+        { key: `asst-${Date.now()}`, role: 'assistant', content: '', widgets: [] },
+      ]);
+      setStreaming(true);
+      const controller = new AbortController();
+      abortRef.current = controller;
+      try {
+        await streamChatTurn(
+          id,
+          payload,
+          {
+            onToolStart: () => undefined,
+            onToolDone: (_toolCallId, _toolName, output) => {
+              const widget = widgetFromToolOutput(output);
+              if (!widget) {
+                return;
               }
-              return copy;
-            });
+              heldWidgetsRef.current = mergeWidgets(widget, heldWidgetsRef.current);
+            },
+            onTextDelta: (delta) => {
+              if (!delta) {
+                return;
+              }
+              queueRef.current += delta;
+              if (!tickRef.current) {
+                drainQueue();
+              }
+            },
+            onStreamError: (streamError) => {
+              setError(streamError);
+            },
           },
-          onStreamError: (streamError) => {
-            setError(streamError);
-          },
-        },
-        controller.signal,
-      );
-    } catch (caught) {
-      setError(statusMessage(caught));
-    } finally {
-      setStreaming(false);
-      abortRef.current = null;
+          controller.signal,
+        );
+      } catch (caught) {
+        setError(statusMessage(caught));
+      } finally {
+        sseOpenRef.current = false;
+        setStreaming(false);
+        abortRef.current = null;
+        if (!tickRef.current) {
+          flushHeldWidgets();
+        }
+      }
+    },
+    [drainQueue, flushHeldWidgets],
+  );
+
+  const startNew = useCallback(async () => {
+    if (streamingRef.current) {
+      abortRef.current?.abort();
     }
-  }, []);
+    if (tickRef.current) {
+      clearTimeout(tickRef.current);
+      tickRef.current = null;
+    }
+    queueRef.current = '';
+    heldWidgetsRef.current = [];
+    sseOpenRef.current = false;
+    setStreaming(false);
+    setText('');
+    stickRef.current = true;
+    await boot(true);
+  }, [boot]);
 
   const stop = useCallback(() => {
     abortRef.current?.abort();
-  }, []);
+    if (tickRef.current) {
+      clearTimeout(tickRef.current);
+      tickRef.current = null;
+    }
+    const rest = queueRef.current;
+    queueRef.current = '';
+    sseOpenRef.current = false;
+    if (rest) {
+      setBubbles((prev) => {
+        const copy = [...prev];
+        const last = copy[copy.length - 1];
+        if (last?.role === 'assistant') {
+          copy[copy.length - 1] = { ...last, content: last.content + rest };
+        }
+        return copy;
+      });
+    }
+    flushHeldWidgets();
+  }, [flushHeldWidgets]);
 
   return {
     bubbles,
@@ -207,6 +328,7 @@ export function usePublicChat() {
     ready,
     threadRef,
     boot,
+    startNew,
     send,
     stop,
   };

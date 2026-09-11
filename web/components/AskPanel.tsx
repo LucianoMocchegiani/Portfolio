@@ -2,6 +2,7 @@
 
 import type { FormEvent, KeyboardEvent } from 'react';
 import { ChatWidgets, RichText } from '@/components/ChatPaint';
+import { filterWidgetsOnProjectPage, textWithoutPaintedProjects, attachIntentWidgets } from '@/lib/chat-paint';
 import type { usePublicChat } from '@/lib/use-public-chat';
 import styles from '@/components/ask.module.css';
 
@@ -13,6 +14,7 @@ export function AskPanel({
   placeholder,
   suggestions,
   prefixWire,
+  pageProjectSlug,
   variant = 'page',
   className,
 }: {
@@ -21,7 +23,8 @@ export function AskPanel({
   placeholder: string;
   suggestions: string[];
   prefixWire?: string;
-  variant?: 'page' | 'side' | 'drawer';
+  pageProjectSlug?: string;
+  variant?: 'page' | 'side' | 'drawer' | 'home';
   className?: string;
 }) {
   const canSend = chat.ready && !chat.streaming && chat.text.trim().length > 0;
@@ -51,38 +54,68 @@ export function AskPanel({
 
   return (
     <section
-      className={`${styles.ask} ${variant === 'side' ? styles.side : ''} ${variant === 'drawer' ? styles.drawer : ''} ${className ?? ''}`}
+      className={`${styles.ask} ${variant === 'side' ? styles.side : ''} ${variant === 'drawer' ? styles.drawer : ''} ${variant === 'home' ? styles.home : ''} ${className ?? ''}`}
       aria-label={title || 'Preguntame'}
     >
       {title ? <p className={styles.kicker}>{title}</p> : null}
-      <div className={styles.thread} ref={chat.threadRef}>
+      <div className={styles.threadShell}>
+        <div className={styles.fadeTop} aria-hidden="true" />
+      <div
+        className={`${styles.thread} ${
+          chat.bubbles.length === 1 && chat.bubbles[0]?.key === 'opening'
+            ? styles.threadOpening
+            : ''
+        }`}
+        ref={chat.threadRef}
+      >
         {chat.bubbles.length === 0 ? (
           <p className={styles.hint}>Preguntame sobre el trabajo.</p>
         ) : (
-          chat.bubbles.map((bubble) =>
+          chat.bubbles.map((bubble, index) =>
             bubble.role === 'user' ? (
               <div key={bubble.key} className={`${styles.bubble} ${styles.user}`}>
                 {bubble.content}
               </div>
             ) : (
               <div key={bubble.key} className={styles.assistantTurn}>
-                {bubble.content || chat.streaming ? (
-                  <div className={`${styles.bubble} ${styles.assistant}`}>
-                    {bubble.content ? (
-                      <RichText text={bubble.content} />
-                    ) : (
-                      <span className={styles.pending}>…</span>
-                    )}
-                  </div>
-                ) : null}
-                {bubble.widgets && bubble.widgets.length > 0 ? (
-                  <ChatWidgets widgets={bubble.widgets} />
-                ) : null}
+                {(() => {
+                  const prev = chat.bubbles[index - 1];
+                  const userText = prev?.role === 'user' ? prev.content : '';
+                  const widgets = attachIntentWidgets(
+                    userText,
+                    filterWidgetsOnProjectPage(
+                      bubble.widgets ?? [],
+                      pageProjectSlug,
+                      userText,
+                    ),
+                  );
+                  const shown = textWithoutPaintedProjects(bubble.content, widgets);
+                  const pending =
+                    chat.streaming &&
+                    index === chat.bubbles.length - 1 &&
+                    !shown;
+                  return (
+                    <>
+                      {shown || pending ? (
+                        <div className={`${styles.bubble} ${styles.assistant}`}>
+                          {shown ? (
+                            <RichText text={shown} />
+                          ) : (
+                            <span className={styles.pending}>…</span>
+                          )}
+                        </div>
+                      ) : null}
+                      {widgets.length > 0 ? <ChatWidgets widgets={widgets} /> : null}
+                    </>
+                  );
+                })()}
               </div>
             ),
           )
         )}
         {chat.error ? <p className={styles.error}>{chat.error}</p> : null}
+        </div>
+        <div className={styles.fadeBottom} aria-hidden="true" />
       </div>
       <div className={styles.chips}>
         {suggestions.map((item) => (
@@ -96,6 +129,14 @@ export function AskPanel({
             {item}
           </button>
         ))}
+        <button
+          type="button"
+          className={styles.newChat}
+          disabled={!chat.ready}
+          onClick={() => void chat.startNew()}
+        >
+          Nuevo chat
+        </button>
       </div>
       <form className={styles.composer} onSubmit={onSubmit}>
         <textarea

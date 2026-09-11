@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 220">
+  <rect width="200" height="220" rx="18" fill="#061018"/>
+  <g fill="#2f6fed" transform="translate(22 6)">
+    <polygon points="78,4 108,34 78,64 48,34"/>
+    <polygon points="42,58 70,86 8,160 0,160 0,128"/>
+    <polygon points="114,58 86,86 148,160 156,160 156,128"/>
+  </g>
+  <text
+    x="100"
+    y="206"
+    text-anchor="middle"
+    fill="#ffffff"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="23"
+    font-weight="700"
+    letter-spacing="6"
+  >SKYNET</text>
+</svg>

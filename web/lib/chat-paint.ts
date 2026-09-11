@@ -91,19 +91,44 @@ export function widgetFromToolOutput(output: unknown): ChatWidget | null {
   return widgetFromTopic(match?.[1]?.toLowerCase());
 }
 
+function looksLikeContact(text: string): boolean {
+  return (
+    /whatsapp|wa\.me|lucianomocchegiani@gmail|linkedin\.com\/in\/luciano|c[oó]mo te contacto|escribime|agendar reuni/i.test(
+      text,
+    )
+  );
+}
+
 export function widgetsFromAssistantText(text: string): ChatWidget[] {
   const lower = text.toLowerCase();
+  const out: ChatWidget[] = [];
   const hits = PROJECTS.filter((item) => {
     const name = item.name.toLowerCase();
     return lower.includes(name.toLowerCase()) || lower.includes(item.href);
   });
   if (hits.length >= 2) {
-    return [{ type: 'projects', slugs: uniqueSlugs(hits) }];
+    out.push({ type: 'projects', slugs: uniqueSlugs(hits) });
+  } else if (hits.length === 1) {
+    out.push({ type: 'project', slug: hits[0].slug });
   }
-  if (hits.length === 1) {
-    return [{ type: 'project', slug: hits[0].slug }];
+  if (looksLikeContact(text)) {
+    out.push({ type: 'contact' });
   }
-  return [];
+  return out;
+}
+
+export function attachIntentWidgets(
+  userText: string,
+  widgets: ChatWidget[],
+): ChatWidget[] {
+  if (
+    /(c[oó]mo te contacto|whatsapp|escribime|agendar|linkedin|e-?mail|tel[eé]fono)/i.test(
+      userText,
+    )
+  ) {
+    return mergeWidgets({ type: 'contact' }, widgets);
+  }
+  return widgets;
 }
 
 function uniqueSlugs(items: Project[]): string[] {
@@ -114,30 +139,127 @@ export function mergeWidgets(
   fromTool: ChatWidget | null,
   fromText: ChatWidget[],
 ): ChatWidget[] {
-  const out: ChatWidget[] = [];
-  const seen = new Set<string>();
-  for (const widget of [fromTool, ...fromText]) {
-    if (!widget) {
-      continue;
-    }
-    const key =
-      widget.type === 'project'
-        ? `project:${widget.slug}`
-        : widget.type === 'projects'
-          ? `projects:${widget.slugs.join(',')}`
-          : widget.type;
-    if (seen.has(key) || (widget.type === 'projects' && seen.has('projects'))) {
-      continue;
-    }
+  const incoming = [fromTool, ...fromText].filter(
+    (widget): widget is ChatWidget => widget != null,
+  );
+  let rail: string[] | null = null;
+  const singles: string[] = [];
+  const rest: ChatWidget[] = [];
+  const seenRest = new Set<string>();
+
+  for (const widget of incoming) {
     if (widget.type === 'projects') {
-      seen.add('projects');
+      rail = uniqueSlugs(
+        [...(rail ?? []), ...widget.slugs]
+          .map((slug) => PROJECTS.find((item) => item.slug === slug))
+          .filter((item): item is Project => item != null),
+      );
+      continue;
     }
-    seen.add(key);
-    out.push(widget);
+    if (widget.type === 'project') {
+      singles.push(widget.slug);
+      continue;
+    }
+    if (seenRest.has(widget.type)) {
+      continue;
+    }
+    seenRest.add(widget.type);
+    rest.push(widget);
   }
+
+  const fromSingles = uniqueSlugs(
+    singles
+      .map((slug) => PROJECTS.find((item) => item.slug === slug))
+      .filter((item): item is Project => item != null),
+  );
+  const out: ChatWidget[] = [];
+  if (rail && rail.length > 0) {
+    out.push({ type: 'projects', slugs: rail });
+  } else if (fromSingles.length > 1) {
+    out.push({ type: 'projects', slugs: fromSingles });
+  } else if (fromSingles.length === 1) {
+    out.push({ type: 'project', slug: fromSingles[0] });
+  }
+  out.push(...rest);
   return out;
+}
+
+function lineMentionsProject(line: string): boolean {
+  const body = line.toLowerCase();
+  return PROJECTS.some(
+    (item) =>
+      body.includes(item.name.toLowerCase()) ||
+      body.includes(item.slug) ||
+      body.includes(item.href.toLowerCase()),
+  );
+}
+
+/**
+ * Si ya hay carrusel, no repetimos la lista de proyectos en el texto.
+ */
+export function textWithoutPaintedProjects(
+  text: string,
+  widgets: ChatWidget[],
+): string {
+  const hasRail = widgets.some(
+    (widget) =>
+      widget.type === 'projects' ||
+      (widget.type === 'project' && widgets.filter((item) => item.type === 'project').length > 1),
+  );
+  if (!hasRail) {
+    return text;
+  }
+  const kept = text.split('\n').filter((line) => {
+    if (!/^\s*(?:[-*]|\d+\.)\s+/.test(line)) {
+      return true;
+    }
+    return !lineMentionsProject(line);
+  });
+  return kept.join('\n').replace(/\n{3,}/g, '\n\n').trim();
 }
 
 export function skillGroups(): [string, string[]][] {
   return Object.entries(SKILLS) as [string, string[]][];
+}
+
+function askedForProjectCard(userText: string): boolean {
+  return /(ficha|tarjeta|\bcard\b|mostr(?:ame|á|a)\s+la\s+(?:ficha|card|tarjeta)|ver\s+(?:la\s+)?ficha)/i.test(
+    userText,
+  );
+}
+
+/**
+ * En la ficha de un proyecto no repetimos su card, salvo que la pidan.
+ */
+export function filterWidgetsOnProjectPage(
+  widgets: ChatWidget[],
+  pageSlug: string | undefined,
+  userText: string,
+): ChatWidget[] {
+  if (!pageSlug) {
+    return widgets;
+  }
+  const keepSelf = askedForProjectCard(userText);
+  const out: ChatWidget[] = [];
+  for (const widget of widgets) {
+    if (widget.type === 'project' && widget.slug === pageSlug && !keepSelf) {
+      continue;
+    }
+    if (widget.type === 'projects') {
+      const slugs = keepSelf
+        ? widget.slugs
+        : widget.slugs.filter((slug) => slug !== pageSlug);
+      if (slugs.length === 0) {
+        continue;
+      }
+      if (slugs.length === 1) {
+        out.push({ type: 'project', slug: slugs[0] });
+      } else {
+        out.push({ type: 'projects', slugs });
+      }
+      continue;
+    }
+    out.push(widget);
+  }
+  return out;
 }

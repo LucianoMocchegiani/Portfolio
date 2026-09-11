@@ -1,0 +1,32 @@
+.disc {
+  width: var(--disc, 5.1rem);
+  height: var(--disc, 5.1rem);
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  overflow: hidden;
+}
+
+.disc img {
+  width: var(--glyph, 3.35rem);
+  height: var(--glyph, 3.35rem);
+  object-fit: contain;
+}
+
+.discMark {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.black {
+  background: #111111;
+  color: #f4f4f5;
+}
+
+.white {
+  background: #ffffff;
+  color: #111111;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ink) 12%, transparent);
+}

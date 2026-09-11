@@ -3,43 +3,35 @@
   width: 100%;
   box-sizing: border-box;
   margin: 0 auto;
-  padding: 3rem max(1.25rem, env(safe-area-inset-left)) 5rem;
+  padding: 0.35rem max(1.25rem, env(safe-area-inset-left)) 4.5rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .hero {
-  min-height: 78vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   text-align: center;
-  gap: 0.35rem;
-  padding-bottom: 4rem;
+  gap: 0;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  height: calc(100dvh - var(--header-h) - 0.35rem);
+  min-height: 28rem;
+  overflow: hidden;
+  padding-bottom: max(0.35rem, env(safe-area-inset-bottom));
 }
 
-.mark {
-  margin: 0;
-  font-size: 0.9rem;
-  letter-spacing: 0.35em;
-  color: var(--muted);
-}
-
-.hero h1 {
-  margin: 0.4rem 0 0;
-  font-size: 1.9rem;
-  font-weight: 500;
-}
-
-.role {
-  margin: 0 0 2rem;
-  color: var(--muted);
-  font-size: 1.1rem;
-}
-
-.askTitle {
-  margin: 0 0 1.25rem;
-  font-size: 1.2rem;
-  font-weight: 400;
-  color: var(--muted);
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .hero :global(.ask) {
@@ -73,26 +65,58 @@
 .card {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  padding: 1.1rem 1rem;
+  gap: 0.45rem;
+  padding: 0;
+  padding-bottom: 1rem;
   border: 1px solid var(--line);
   border-radius: 12px;
   text-decoration: none;
   color: inherit;
+  overflow: hidden;
 }
 
-.card:hover {
-  border-color: var(--ink);
+.cardCover {
+  position: relative;
+  height: 7.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--panel);
+  color: var(--ink);
+  --disc: 4.5rem;
+  --glyph: 2.9rem;
+}
+
+.cardCover span {
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+.cardCover em {
+  position: absolute;
+  left: 0.85rem;
+  bottom: 0.5rem;
+  font-style: normal;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
 .cardName {
   font-weight: 500;
   font-size: 1.08rem;
+  padding: 0 1rem;
 }
 
 .cardTag {
   color: var(--muted);
   font-size: 1rem;
+  padding: 0 1rem;
+}
+
+.card:hover {
+  border-color: var(--ink);
 }
 
 .gridQuiet {
@@ -141,20 +165,27 @@
 
 @media (max-width: 640px) {
   .page {
-    padding: 2rem 1rem 4.5rem;
+    padding: 0.25rem 1rem 4rem;
+  }
+
+  .hero {
+    height: calc(100dvh - var(--header-h) - 0.25rem);
+    min-height: 24rem;
   }
 
   .grid {
     grid-template-columns: 1fr;
   }
 
-  .hero h1 {
-    font-size: 1.55rem;
-  }
-
   .skillKey {
     display: block;
     min-width: 0;
     margin-bottom: 0.15rem;
+  }
+}
+
+@media (max-height: 700px) {
+  .hero {
+    min-height: 22rem;
   }
 }

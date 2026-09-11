@@ -1,7 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { projectCoverSrc, projectLook, type WorkKind } from '@/lib/work';
+import {
+  projectBySlug,
+  projectCoverSources,
+  projectDiscTone,
+  projectLook,
+  type WorkKind,
+} from '@/lib/work';
+import styles from '@/components/cover.module.css';
 
 type Props = {
   slug: string;
@@ -12,7 +19,7 @@ type Props = {
 };
 
 /**
- * Portada de proyecto: `/work/{slug}.jpg` o iniciales si el archivo no está.
+ * Portada: icono en un disco del color de la marca.
  */
 export function ProjectCover({
   slug,
@@ -21,15 +28,23 @@ export function ProjectCover({
   markClassName,
   kindClassName,
 }: Props) {
-  const [broken, setBroken] = useState(false);
+  const project = projectBySlug(slug);
   const look = projectLook(slug);
+  const sources = projectCoverSources(slug, project?.href);
+  const [index, setIndex] = useState(0);
+  const src = sources[index];
+  const broken = !src;
+  const tone = projectDiscTone(slug);
 
   return (
     <div className={className}>
-      {!broken ? (
-        <img src={projectCoverSrc(slug)} alt="" onError={() => setBroken(true)} />
-      ) : null}
-      <span className={markClassName}>{look.mark}</span>
+      <span className={`${styles.disc} ${tone === 'black' ? styles.black : styles.white}`}>
+        {!broken ? (
+          <img src={src} alt="" onError={() => setIndex((value) => value + 1)} />
+        ) : (
+          <span className={`${styles.discMark} ${markClassName ?? ''}`}>{look.mark}</span>
+        )}
+      </span>
       <em className={kindClassName}>{kind === 'propio' ? 'Propio' : 'Asignado'}</em>
     </div>
   );

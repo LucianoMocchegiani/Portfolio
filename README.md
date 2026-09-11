@@ -28,3 +28,19 @@ El contenido del CV está en `mcp/help/*.md`. El chat público solo usa la tool 
 
 Portadas de cards: `web/public/work/<slug>.jpg` (ver `web/public/work/README.md`). Si no hay archivo, se muestran las iniciales.
 
+## Dominio (Cloudflare Tunnel)
+
+Igual que Kuatia/Faciliter: un túnel propio, no el de Faciliter.
+
+| Host | Origen local |
+|------|----------------|
+| `lucianomocchegiani.xyz` / `www` | web **3003** |
+| `chat.lucianomocchegiani.xyz` | chat-api **3020** |
+
+```powershell
+cloudflared tunnel --origincert C:\Users\User\.cloudflared\cert.pem --config C:\Users\User\.cloudflared\config-luciano.yml run luciano
+```
+
+Detalle en `local/cloudeflared.md`.
+
+
