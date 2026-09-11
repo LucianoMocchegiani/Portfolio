@@ -17,14 +17,14 @@ Logro en QuarkID: estabilización del ecosistema (reestructura de servicios, blo
 Software Engineer, productos propios. SaaS de afiliaciones (Faciliter) e infraestructura de credenciales (Kuatia).
 
 ## Aubilities — oct. 2023 — oct. 2024 (remoto)
-Full Stack Developer. Find My Couch desde cero: Cognito (JWT, RBAC), datos sensibles, paquetes por perfil cognitivo, calendario, panel de admin.
+Full Stack Developer. Plataforma de neurodivergencia: PHP legado (usuario + admin); se migraba a React. Trabajé en los productos React (chat, Find My Couch: sesiones y fotos en S3). Cognito para auth.
 
-Impacto: modernización completa. Logro: núcleo funcional del producto.
+Impacto: modernización del stack, salida del legado. Logro: módulos React (Couch, chat) en producción sobre el host viejo.
 
 ## Seekitup — jun. 2023 — oct. 2023 (remoto)
 Full Stack Developer. App mobile de red social y backend API-First; pizarras en tiempo real.
 
 ## ISP Skynet — jun. 2021 — jul. 2023 (presencial)
-Full Stack Developer, único desarrollador. Plataforma de autogestión: usuarios, pagos, planes, facturación.
+Full Stack Developer, único desarrollador. Portal de autogestión del ISP (~3000 clientes): React + API Express, adaptadores a Mercado Pago, red y facturación legado. PostgreSQL.
 
-Impacto: menos carga operativa. Logro: primera plataforma de autogestión del ISP.
+Impacto: menos carga operativa. Logro: primera plataforma de autogestión del ISP, de punta a punta.

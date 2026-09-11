@@ -23,7 +23,7 @@ export const PROJECTS: Project[] = [
     kind: 'propio',
     href: 'https://kuatia.xyz/',
     role: 'Software Engineer — producto propio',
-    stack: ['Next.js', 'NestJS', 'React Native / Flutter', 'PostgreSQL', 'Redis', 'OpenID4VC'],
+    stack: ['Next.js', 'NestJS', 'React Native / Flutter', 'PostgreSQL', 'OpenID4VC'],
     about:
       'Infraestructura para emitir y verificar credenciales con estándares abiertos (OpenID4VCI/VP, SD-JWT). Issuer, verifier y wallet. El titular guarda la credencial; vos verificás la prueba.',
     built: [
@@ -75,19 +75,25 @@ export const PROJECTS: Project[] = [
     architecture: `flowchart TB
   socio["Socio (app)"]
   staff["Staff (panel)"]
+  super["Super Admin"]
   api[Nest API]
   pg[(Postgres)]
   redis[(Redis)]
   kuatia[Kuatia]
+  mp[Mercado Pago]
   chat[chat-api]
   mcp[MCP]
   socio --> api
   staff --> api
+  super --> api
+  staff --> chat
+  chat --> pg
+  chat --> mcp
+  mcp --> api
   api --> pg
   api --> redis
   api --> kuatia
-  api --> chat
-  chat --> mcp`,
+  api --> mp`,
     questions: [
       '¿Qué problema resuelve Faciliter?',
       '¿Cómo se relaciona con Kuatia?',
@@ -114,16 +120,29 @@ export const PROJECTS: Project[] = [
     architecture: `flowchart TB
   ciudadano[Ciudadano]
   bax["BAX app Flutter"]
-  miba[MiBA auth]
-  quark[Quark Agent]
-  servicios[Servicios BA]
+  login[MiBA Login]
+  session[session-ms]
+  mibaApi[miba2-api]
+  verifier["Verificador (WebView)"]
+  boti[Boti]
+  eleven[ElevenLabs]
+  connect[MiBA Connect]
+  proxy[Proxy Core]
+  tad["TAD / VisionBA"]
+  gedo[GEDO]
+  eventos[Eventos]
   ciudadano --> bax
-  bax --> miba
-  bax --> quark
-  bax --> servicios
-  quark --> emisor[Emisor]
-  quark --> verificador[Verificador]
-  quark --> accesos[Accesos]`,
+  bax --> login
+  bax --> session
+  bax --> mibaApi
+  bax --> verifier
+  session --> boti
+  session --> eleven
+  session --> connect
+  session --> proxy
+  session --> tad
+  session --> gedo
+  session --> eventos`,
     questions: [
       '¿Qué es BAX y qué hiciste ahí?',
       '¿Cómo se conecta BAX con QuarkID?',
@@ -149,23 +168,31 @@ export const PROJECTS: Project[] = [
       'KMS / DIDComm y resolución de DIDs (Sidetree, IPFS, RSK/LACChain)',
     ],
     architecture: `flowchart TB
-  fronts["Front emisor / verificador / accesos"]
-  apis[APIs Nest]
-  agent[QuarkID Agent]
-  wallet[Wallet]
-  redis[(Redis)]
-  pg[(Postgres)]
+  ops[Operadores]
+  emisor[Emisor]
+  verificador[Verificador]
+  accesos[Accesos]
+  wallet["Wallet / BAX"]
   connect[MiBA Connect]
-  kms[KMS / Vault]
-  did["Sidetree / IPFS / chain"]
-  fronts --> apis
-  apis --> agent
-  agent --> wallet
-  agent --> redis
-  agent --> pg
+  modena[Modena Resolver]
+  sidetree[rsk-sidetree]
+  vcsl[VCSL]
+  ipfs[IPFS]
+  chain[Blockchain]
+  ops --> emisor
+  ops --> verificador
+  ops --> accesos
   wallet --> connect
-  connect --> kms
-  connect --> did`,
+  wallet -.-> verificador
+  emisor --> modena
+  verificador --> modena
+  accesos --> modena
+  connect --> modena
+  emisor -.-> vcsl
+  modena --> sidetree
+  sidetree --> ipfs
+  sidetree --> chain
+  vcsl --> ipfs`,
     questions: [
       '¿Qué es WACI en este ecosistema?',
       '¿Para qué usan Redis en el verificador?',
@@ -182,7 +209,7 @@ export const PROJECTS: Project[] = [
     role: 'Software Engineer — Phinx Lab (oct. 2024 — actualidad)',
     stack: ['Node.js', 'TypeScript', 'React', 'Vite', 'PostgreSQL', 'Redis', 'Kafka'],
     about:
-      'Plataforma de servicios al ciudadano del GCBA: core de turnos e inscripciones, backoffice con microfrontends, conectores (Boti, Doppler) y colas Kafka. Auth de ciudadanos con MIBA; staff con Active Directory.',
+      'Web de la Ciudad para sacar turno (incluye salud), inscribirse a programas e iniciar trámites. El vecino entra con MiBA; el organismo opera el catálogo, las agendas y las inscripciones desde un backoffice (AD). Las notificaciones salen asíncronas (Boti, Doppler).',
     built: [
       'APIs core y backoffice',
       'Front ciudadano y shell de microfrontends',
@@ -190,19 +217,26 @@ export const PROJECTS: Project[] = [
     ],
     architecture: `flowchart TB
   ciudadano["Ciudadano (React)"]
-  backoffice["Backoffice (microfrontends)"]
+  shell["Backoffice shell + MFEs"]
   backend[backoffice-backend]
   core[core]
   connectors[connectors]
-  pg[(Postgres)]
-  kafka[queue-manager Kafka]
+  queue[queue-manager]
+  miba[MiBA]
+  ad[Active Directory]
+  boti[Boti]
+  doppler[Doppler]
+  ciudadano --> miba
   ciudadano --> backend
-  backoffice --> backend
+  shell --> ad
+  shell --> backend
   backend --> core
   backend --> connectors
-  core --> pg
-  core --> kafka
-  connectors --> boti[Boti / etc.]`,
+  core --> queue
+  queue --> backend
+  queue --> connectors
+  connectors --> boti
+  connectors --> doppler`,
     questions: [
       '¿Cómo está partido Servicios BA?',
       '¿Qué rol tiene Kafka?',
@@ -213,28 +247,37 @@ export const PROJECTS: Project[] = [
   {
     slug: 'aubilities',
     name: 'Aubilities',
-    tagline: 'Find My Couch — inclusión cognitiva',
+    tagline: 'Plataforma de inclusión cognitiva',
     kind: 'asignado',
     href: 'https://aubilities.com/',
     role: 'Full Stack Developer — oct. 2023 — oct. 2024',
-    stack: ['React', 'MUI', 'Node.js', 'Express', 'AWS Cognito', 'Vite'],
+    stack: ['React', 'Vite', 'AWS Cognito', 'S3'],
     about:
-      'Producto Find My Couch desde cero: arquitectura por contextos, Cognito (JWT, RBAC), datos sensibles, paquetes por perfil cognitivo, calendario y panel de admin.',
+      'Plataforma de neurodivergencia: cuestionarios, noticias, admin, chat y Find My Couch (encontrar un couch, sesiones, fotos en S3). El host PHP era legado; se migraba a React. Yo trabajé en los productos React, no en el monolito PHP como destino.',
     built: [
-      'Núcleo funcional del producto (registro, perfiles, archivos, paquetes, asistencia)',
-      'Auth y autorización con AWS Cognito',
-      'Panel de administración (usuarios, paquetes, especialistas)',
-      'Testing y refactor continuo',
+      'Productos React montados sobre el legado (chat, Find My Couch)',
+      'Find My Couch: matching de couch, sesiones e imágenes en S3',
+      'Migración del servicio PHP hacia el stack nuevo',
+      'Auth Cognito, testing y refactor',
     ],
     architecture: `flowchart TB
-  fronts["Microfrontends (Vite)"]
-  apis[APIs Node]
-  aws[AWS]
-  fronts --> apis
-  apis --> aws`,
+  user[Usuario]
+  admin[Admin]
+  php["PHP legado"]
+  chat["Chat (React)"]
+  couch["Find My Couch (React)"]
+  cognito[Cognito]
+  s3[(S3)]
+  user --> php
+  admin --> php
+  php --> chat
+  php --> couch
+  php --> cognito
+  couch --> s3`,
     questions: [
-      '¿Qué hiciste en Aubilities?',
-      '¿Cómo armaban los microfrontends?',
+      '¿De qué va Aubilities?',
+      '¿Qué es Find My Couch?',
+      '¿Qué hiciste vos ahí?',
     ],
     featured: false,
   },
@@ -245,7 +288,7 @@ export const PROJECTS: Project[] = [
     kind: 'asignado',
     href: 'https://www.seekitup.com/',
     role: 'Full Stack Developer — jun. 2023 — oct. 2023',
-    stack: ['React Native', 'Node.js', 'Express', 'API-First'],
+    stack: ['React Native', 'Node.js', 'Express', 'PostgreSQL'],
     about:
       'App mobile y backend API-First: autenticación, usuarios, módulos sociales y pizarras en tiempo real. Implementación desde Figma.',
     built: [
@@ -269,21 +312,38 @@ export const PROJECTS: Project[] = [
     kind: 'asignado',
     href: 'https://ipskynet.com.ar/',
     role: 'Full Stack Developer — jun. 2021 — jul. 2023',
-    stack: ['React', 'Node.js', 'Express', 'PostgreSQL'],
+    stack: ['React', 'Vite', 'Node.js', 'Express', 'PostgreSQL'],
     about:
-      'Plataforma web de autogestión para clientes del ISP. Único desarrollador: registro, pagos, planes, facturación y dashboard.',
+      'Portal de autogestión del ISP (~3000 clientes): facturas, pagos, planes y estado de conexión. Único desarrollador. React habla con skynet-api; pagos, red y facturación van por adaptadores al legado y a Mercado Pago.',
     built: [
-      'Producto end-to-end (front y back)',
-      'Integración con APIs de pagos y de conexiones',
-      'Planes, promociones, facturación y dashboard',
+      'skynet-frontend (React) y skynet-api (Express)',
+      'Adaptadores: pagos, conexiones y facturación',
+      'Primera autogestión del ISP, punta a punta',
     ],
     architecture: `flowchart TB
-  web[React]
-  api["Express + Sequelize"]
-  pg[(PostgreSQL)]
+  cliente[Cliente]
+  web["skynet-frontend"]
+  api[skynet-api]
+  pay[payment-adapter]
+  conn[connection-adapter]
+  bill[billing-adapter]
+  mp[Mercado Pago]
+  banco[Bancos]
+  red["Conexiones legacy"]
+  fact["Facturación legacy"]
+  cliente --> web
   web --> api
-  api --> pg`,
-    questions: ['¿Qué hiciste en Skynet?', '¿Con qué stack empezaste?'],
+  api --> pay
+  api --> conn
+  api --> bill
+  pay --> mp
+  pay --> banco
+  conn --> red
+  bill --> fact`,
+    questions: [
+      '¿Qué hiciste en Skynet?',
+      '¿Cómo cobraban los clientes?',
+    ],
     featured: false,
   },
   {
@@ -409,7 +469,7 @@ export const EXPERIENCE = [
     org: 'Aubilities',
     role: 'Full Stack Developer (remoto)',
     dates: 'oct. 2023 — oct. 2024',
-    detail: 'Find My Couch desde cero: Cognito, datos sensibles, paquetes por perfil, admin.',
+    detail: 'PHP legado; productos React (chat, Find My Couch con sesiones y S3) y migración al stack nuevo.',
     impact: 'Núcleo funcional completo y arquitectura clara, escalable y mantenible.',
   },
   {
@@ -423,7 +483,7 @@ export const EXPERIENCE = [
     org: 'ISP Skynet',
     role: 'Full Stack Developer (presencial)',
     dates: 'jun. 2021 — jul. 2023',
-    detail: 'Autogestión de clientes: usuarios, pagos, planes, facturación. Único desarrollador.',
+    detail: 'Portal de autogestión: React + API, adaptadores a Mercado Pago, red y facturación legado. Único desarrollador.',
     impact: 'Primera plataforma de autogestión del ISP; menos carga operativa.',
   },
 ];

@@ -1,9 +1,13 @@
 # Código (GitHub)
 
-No es un producto aparte: es la puerta al resto del código. Card del portfolio, kind `repos`. https://github.com/LucianoMocchegiani
+No es un producto: es la puerta al resto del código. Card del portfolio, kind `repos`. https://github.com/LucianoMocchegiani
 
-Las fichas (Kuatia, Faciliter, BAX, etc.) cubren los trabajos con historia. Lo que no entra en una ficha —pruebas, snippets, WIP— está en el perfil.
+Las fichas (Kuatia, Faciliter, BAX, QuarkID, Servicios BA, Aubilities, Seekitup, Skynet) cubren los trabajos con historia. Lo que no entra en una ficha —pruebas, snippets, WIP, experimentos— está en el perfil.
 
-Rol: perfil público. Stack: TypeScript, JavaScript, Python, Dart (y lo que haya en cada repo).
+Rol: perfil público. Stack según el repo: TypeScript, JavaScript, Python, Dart.
 
-Si preguntan “dónde veo tu código” o “tu GitHub”, mandalos al perfil. No inventes repos que no estén ahí. No pegues listas largas de repos: una frase y el link.
+## Cómo responder
+
+Si preguntan “dónde veo tu código” o “tu GitHub”: una frase y el link al perfil. **No inventes repos.** No pegues listas largas. No trates a GitHub como un producto tipo Faciliter.
+
+Si preguntan el código de un producto concreto, preferí la ficha de ese producto (topic `kuatia`, `faciliter`, etc.) y, si aplica, el perfil para lo demás.
