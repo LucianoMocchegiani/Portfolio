@@ -1,0 +1,28 @@
+{
+  "name": "luciano-web",
+  "version": "0.0.1",
+  "private": true,
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "next dev --turbopack -H 0.0.0.0 -p 3003",
+    "build": "next build --turbopack",
+    "start": "next start -H 0.0.0.0 -p 3000",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "next": "^16.2.10",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "eslint": "^9",
+    "eslint-config-next": "^16.2.10",
+    "typescript": "^5.9.3"
+  }
+}

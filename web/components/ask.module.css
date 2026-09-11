@@ -1,0 +1,170 @@
+.ask {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-height: 0;
+  text-align: left;
+}
+
+.side .thread {
+  max-height: 22rem;
+}
+
+.drawer {
+  flex: 1;
+  min-height: 0;
+  padding: 0.85rem 1rem 1rem;
+}
+
+.drawer .thread {
+  flex: 1;
+  max-height: none;
+}
+
+.kicker {
+  margin: 0;
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.thread {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  max-height: min(62vh, 42rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scroll) transparent;
+}
+
+.thread::-webkit-scrollbar {
+  width: 8px;
+}
+
+.thread::-webkit-scrollbar-thumb {
+  background: var(--scroll);
+  border-radius: 999px;
+}
+
+.hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+.assistantTurn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: stretch;
+  width: 100%;
+}
+
+.bubble {
+  max-width: 92%;
+  padding: 0.7rem 0.95rem;
+  border-radius: 16px;
+  line-height: 1.45;
+  font-size: 1.08rem;
+}
+
+.user {
+  align-self: flex-end;
+  background: var(--accent);
+  color: var(--accent-ink);
+  white-space: pre-wrap;
+}
+
+.assistant {
+  align-self: flex-start;
+  max-width: 100%;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.pending {
+  color: var(--muted);
+}
+
+.error {
+  color: var(--danger);
+  font-size: 1rem;
+  margin: 0;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.chip {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 0.4rem 0.75rem;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.95rem;
+}
+
+.chip:hover:not(:disabled) {
+  border-color: var(--ink);
+}
+
+.chip:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.composer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.35rem 0.4rem 0.35rem 1rem;
+  background: var(--panel);
+}
+
+.composer textarea {
+  flex: 1;
+  border: 0;
+  resize: none;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 1.05rem;
+  outline: none;
+  min-height: 1.45rem;
+}
+
+.send {
+  width: 2.35rem;
+  height: 2.35rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--line);
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+}
+
+.sendReady {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+@media (max-width: 640px) {
+  .bubble {
+    max-width: 100%;
+  }
+
+  .composer {
+    padding-left: 0.85rem;
+  }
+}

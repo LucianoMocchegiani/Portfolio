@@ -1,0 +1,106 @@
+# Portfolio Luciano — chat-api propio + MCP propio.
+# No uses 3000/5432/9000-9002 (Kuatia) ni 3001-3002/3010-3011/5433/6379 (Faciliter).
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: luciano-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: luciano
+      POSTGRES_PASSWORD: luciano
+      POSTGRES_DB: chat
+    ports:
+      # Host 5434: Kuatia usa 5432, Faciliter 5433.
+      - "127.0.0.1:5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U luciano -d chat"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mcp:
+    build:
+      context: ./mcp
+      dockerfile: Dockerfile
+    container_name: luciano-mcp
+    restart: unless-stopped
+    env_file:
+      - ./mcp/.env
+    environment:
+      NODE_ENV: production
+    ports:
+      - "3021:3021"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"fetch('http://127.0.0.1:3021/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\"",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  chat-api:
+    build:
+      context: ./chat-api
+      dockerfile: Dockerfile
+    container_name: luciano-chat-api
+    restart: unless-stopped
+    env_file:
+      - ./chat-api/.env
+    environment:
+      NODE_ENV: production
+      PORT: "3020"
+    ports:
+      - "3020:3020"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mcp:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"fetch('http://127.0.0.1:3020/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\"",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_CHAT_API_URL: ${NEXT_PUBLIC_CHAT_API_URL:-http://localhost:3020}
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3003}
+    container_name: luciano-web
+    restart: unless-stopped
+    env_file:
+      - ./web/.env
+    environment:
+      NODE_ENV: production
+    ports:
+      # Host 3003: Kuatia Next en 3000, Faciliter web en 3002.
+      - "3003:3000"
+    depends_on:
+      chat-api:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\"",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+volumes:
+  postgres_data:

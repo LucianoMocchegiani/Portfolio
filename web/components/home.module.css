@@ -1,0 +1,160 @@
+.page {
+  max-width: var(--content);
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 auto;
+  padding: 3rem max(1.25rem, env(safe-area-inset-left)) 5rem;
+}
+
+.hero {
+  min-height: 78vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  gap: 0.35rem;
+  padding-bottom: 4rem;
+}
+
+.mark {
+  margin: 0;
+  font-size: 0.9rem;
+  letter-spacing: 0.35em;
+  color: var(--muted);
+}
+
+.hero h1 {
+  margin: 0.4rem 0 0;
+  font-size: 1.9rem;
+  font-weight: 500;
+}
+
+.role {
+  margin: 0 0 2rem;
+  color: var(--muted);
+  font-size: 1.1rem;
+}
+
+.askTitle {
+  margin: 0 0 1.25rem;
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.hero :global(.ask) {
+  text-align: left;
+}
+
+.block {
+  padding: 3.5rem 0 0;
+  border-top: 1px solid var(--line);
+  margin-top: 2.5rem;
+}
+
+.block h2 {
+  margin: 0 0 1.5rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1.1rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.card:hover {
+  border-color: var(--ink);
+}
+
+.cardName {
+  font-weight: 500;
+  font-size: 1.08rem;
+}
+
+.cardTag {
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+.gridQuiet {
+  list-style: none;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+}
+
+.gridQuiet a {
+  color: var(--muted);
+}
+
+.jobs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.jobOrg {
+  margin: 0;
+  font-weight: 500;
+  font-size: 1.12rem;
+}
+
+.muted,
+.jobs p {
+  margin: 0.2rem 0 0;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.skillKey {
+  display: inline-block;
+  min-width: 8.5rem;
+  color: var(--muted);
+  text-transform: lowercase;
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 2rem 1rem 4.5rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero h1 {
+    font-size: 1.55rem;
+  }
+
+  .skillKey {
+    display: block;
+    min-width: 0;
+    margin-bottom: 0.15rem;
+  }
+}
