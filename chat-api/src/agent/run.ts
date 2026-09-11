@@ -1,4 +1,4 @@
-import { streamText } from 'ai';
+import { streamText, type ModelMessage } from 'ai';
 import { HTTPException } from 'hono/http-exception';
 import { config } from '../config.js';
 import { applyAutomaticTitle } from '../conversations/service.js';
@@ -13,7 +13,7 @@ import {
   toJsonValue,
   touchConversation,
 } from '../messages/persist.js';
-import { stripLeakedToolTalk } from './sanitize.js';
+import { stripFichaWirePrefix, stripLeakedToolTalk } from './sanitize.js';
 import { buildModelMessages, shrinkToolContent } from './window.js';
 
 type LooseTool = {
@@ -67,6 +67,24 @@ function assistantTextOf(text: string | undefined, steps: LooseStep[]): string {
           .join('\n')
           .trim();
   return stripLeakedToolTalk(raw);
+}
+
+function withFichaWireHint(
+  messages: ModelMessage[],
+  wire: string,
+  visible: string,
+): ModelMessage[] {
+  if (wire.trim() === visible) {
+    return messages;
+  }
+  const next = [...messages];
+  for (let i = next.length - 1; i >= 0; i -= 1) {
+    if (next[i].role === 'user') {
+      next[i] = { role: 'user', content: wire };
+      break;
+    }
+  }
+  return next;
 }
 
 async function persistAgentTurn(
@@ -142,10 +160,15 @@ export async function streamAgentTurn(
     });
   }
 
-  await insertUserMessage(conversationId, userText);
-  await applyAutomaticTitle(conversationId, userText);
+  const visibleUser = stripFichaWirePrefix(userText);
+  await insertUserMessage(conversationId, visibleUser);
+  await applyAutomaticTitle(conversationId, visibleUser);
   const history = await listMessages(conversationId);
-  const messages = buildModelMessages(history);
+  const messages = withFichaWireHint(
+    buildModelMessages(history),
+    userText,
+    visibleUser,
+  );
   const system =
     mode === 'public' ? config.chatPublicSystemPrompt : config.chatSystemPrompt;
 

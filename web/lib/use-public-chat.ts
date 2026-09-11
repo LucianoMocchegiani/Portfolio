@@ -18,7 +18,7 @@ import {
   widgetsFromAssistantText,
   type ChatWidget,
 } from '@/lib/chat-paint';
-import { stripLeakedToolTalk, visibleAssistantStream } from '@/lib/chat-sanitize';
+import { stripFichaWirePrefix, stripLeakedToolTalk, visibleAssistantStream } from '@/lib/chat-sanitize';
 
 export type Bubble = {
   key: string;
@@ -54,7 +54,7 @@ function bubblesFromHistory(rows: ChatMessage[]): Bubble[] {
     }
     if (row.role === 'user') {
       pending = null;
-      out.push({ key: row.id, role: 'user', content: row.content });
+      out.push({ key: row.id, role: 'user', content: stripFichaWirePrefix(row.content) });
       continue;
     }
     if (row.role === 'assistant') {

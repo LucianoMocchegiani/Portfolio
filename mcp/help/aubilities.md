@@ -8,7 +8,7 @@ El **usuario** se loguea, completa **cuestionarios** de neurodivergencia, ve **n
 
 **PHP era legado** (ahí estaba montado usuario + admin). Se buscaba **migrar a React**. Yo trabajaba en los **productos React**, no en el PHP como destino.
 
-Si preguntan de qué va: plataforma de neurodivergencia. Si preguntan Find My Couch: módulo React para **encontrar un couch**, con **sesiones** y **fotos en S3** — no es el nombre del producto. Si preguntan qué hice: React + migración, no el monolito PHP.
+Si preguntan de qué va: plataforma de neurodivergencia. Si preguntan Find My Couch: módulo React para **encontrar un couch** (así se llama en el producto), con **sesiones** y **fotos en S3** — no es el nombre del producto ni un “mentor”. Si preguntan qué hice: React + migración, no el monolito PHP.
 
 Stack: React, Vite, AWS Cognito, S3. PHP solo como legado.
 

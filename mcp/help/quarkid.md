@@ -12,6 +12,8 @@ BAX no corre el protocolo: usa Connect como holder y el verificador embebido. To
 
 Si preguntan qué mantienen: emisor, verificador, accesos, MiBA Connect (websocket + KMS) y el nodo (Modena, Sidetree, VCSL, IPFS API).
 
+Si preguntan qué es **WACI**: protocolo de **invitación por QR** para emitir o presentar una credencial (el holder escanea; hay una sesión). No es QuarkID entero ni “el estándar de blockchain”. No armes una definición SSI genérica: es ese flujo de emisión/presentación.
+
 WACI: protocolo de presentación/emisión por QR (invitación). Redis en el verificador: TTL de la sesión de verificación.
 
 ---

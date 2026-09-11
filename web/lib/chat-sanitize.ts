@@ -1,5 +1,13 @@
 const TOOL_PREFIXES = ['functions.get_help', 'get_help'];
 
+const FICHA_WIRE_PREFIX =
+  /^(?:Estoy en la ficha de|Estás respondiendo sobre la ficha)[^\n]*\n+/i;
+
+/** El wire de la ficha no es parte de la pregunta del usuario. */
+export function stripFichaWirePrefix(text: string): string {
+  return text.replace(FICHA_WIRE_PREFIX, '').trim();
+}
+
 function looksLikeMetaLead(text: string): boolean {
   const t = text.trimStart();
   if (!t || t.length > 180 || t.includes('\n')) {

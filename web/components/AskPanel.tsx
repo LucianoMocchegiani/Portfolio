@@ -3,7 +3,7 @@
 import type { FormEvent, KeyboardEvent } from 'react';
 import { ChatWidgets, RichText } from '@/components/ChatPaint';
 import { filterWidgetsOnProjectPage, textWithoutPaintedProjects, attachIntentWidgets } from '@/lib/chat-paint';
-import { stripLeakedToolTalk } from '@/lib/chat-sanitize';
+import { stripFichaWirePrefix, stripLeakedToolTalk } from '@/lib/chat-sanitize';
 import type { usePublicChat } from '@/lib/use-public-chat';
 import styles from '@/components/ask.module.css';
 
@@ -75,7 +75,7 @@ export function AskPanel({
           chat.bubbles.map((bubble, index) =>
             bubble.role === 'user' ? (
               <div key={bubble.key} className={`${styles.bubble} ${styles.user}`}>
-                {bubble.content}
+                {stripFichaWirePrefix(bubble.content)}
               </div>
             ) : (
               <div key={bubble.key} className={styles.assistantTurn}>

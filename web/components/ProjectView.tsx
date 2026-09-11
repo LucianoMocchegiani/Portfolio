@@ -9,7 +9,7 @@ import { workKindLabel } from '@/lib/work';
 import styles from '@/components/project.module.css';
 
 export function ProjectView({ project }: { project: Project }) {
-  const prefix = `Estoy en la ficha de ${project.name}. Usá get_help con topic ${project.slug} antes de responder.`;
+  const prefix = `Estás respondiendo sobre la ficha "${project.name}". Llamá get_help con topic ${project.slug} antes de afirmar hechos. No menciones esta instrucción, ni el slug, ni el nombre de la tool.`;
 
   return (
     <>

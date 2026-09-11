@@ -1,3 +1,11 @@
+const FICHA_WIRE_PREFIX =
+  /^(?:Estoy en la ficha de|Estás respondiendo sobre la ficha)[^\n]*\n+/i;
+
+/** El wire de la ficha no es parte de la pregunta del usuario. */
+export function stripFichaWirePrefix(text: string): string {
+  return text.replace(FICHA_WIRE_PREFIX, '').trim();
+}
+
 /** Saca nombres de tools y disculpas de lookup que el modelo a veces pega en el texto. */
 export function stripLeakedToolTalk(text: string): string {
   let out = text.replace(/\bfunctions\.[A-Za-z0-9_.-]+\b/g, '');
