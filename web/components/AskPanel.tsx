@@ -1,11 +1,13 @@
 'use client';
 
-import type { FormEvent, KeyboardEvent } from 'react';
+import { useEffect, useRef, type FormEvent, type KeyboardEvent } from 'react';
 import { ChatWidgets, RichText } from '@/components/ChatPaint';
 import { filterWidgetsOnProjectPage, textWithoutPaintedProjects, attachIntentWidgets } from '@/lib/chat-paint';
 import { stripFichaWirePrefix, stripLeakedToolTalk } from '@/lib/chat-sanitize';
 import type { usePublicChat } from '@/lib/use-public-chat';
 import styles from '@/components/ask.module.css';
+
+const FIELD_MAX_PX = 160;
 
 type Chat = ReturnType<typeof usePublicChat>;
 
@@ -28,7 +30,17 @@ export function AskPanel({
   variant?: 'page' | 'side' | 'drawer' | 'home';
   className?: string;
 }) {
+  const fieldRef = useRef<HTMLTextAreaElement>(null);
   const canSend = chat.ready && !chat.streaming && chat.text.trim().length > 0;
+
+  useEffect(() => {
+    const el = fieldRef.current;
+    if (!el) {
+      return;
+    }
+    el.style.height = '0px';
+    el.style.height = `${Math.min(el.scrollHeight, FIELD_MAX_PX)}px`;
+  }, [chat.text]);
 
   function wireOf(question: string): string {
     if (!prefixWire) {
@@ -151,6 +163,7 @@ export function AskPanel({
       </div>
       <form className={styles.composer} onSubmit={onSubmit}>
         <textarea
+          ref={fieldRef}
           value={chat.text}
           onChange={(event) => chat.setText(event.target.value)}
           onKeyDown={onKeyDown}

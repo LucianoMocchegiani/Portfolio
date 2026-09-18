@@ -27,7 +27,7 @@ export type Bubble = {
   widgets?: ChatWidget[];
 };
 
-const NEAR_BOTTOM_PX = 96;
+const NEAR_BOTTOM_PX = 40;
 const CHARS_PER_TICK = 5;
 const TICK_MS = 18;
 const OPENING =
@@ -100,6 +100,8 @@ export function usePublicChat() {
   const conversationIdRef = useRef<string | null>(null);
   const streamingRef = useRef(false);
   const stickRef = useRef(true);
+  const jumpingRef = useRef(false);
+  const lastTouchYRef = useRef(0);
   const queueRef = useRef('');
   const tickRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const heldWidgetsRef = useRef<ChatWidget[]>([]);
@@ -118,7 +120,11 @@ export function usePublicChat() {
   const scrollIfStuck = useCallback(() => {
     const el = threadRef.current;
     if (el && stickRef.current) {
+      jumpingRef.current = true;
       el.scrollTop = el.scrollHeight;
+      requestAnimationFrame(() => {
+        jumpingRef.current = false;
+      });
     }
   }, []);
 
@@ -172,11 +178,37 @@ export function usePublicChat() {
     }
     const node = el;
     function onScroll(): void {
+      if (jumpingRef.current) {
+        return;
+      }
       stickRef.current = isNearBottom(node);
     }
+    function onWheel(e: WheelEvent): void {
+      if (e.deltaY < 0) {
+        stickRef.current = false;
+      }
+    }
+    function onTouchStart(e: TouchEvent): void {
+      lastTouchYRef.current = e.touches[0]?.clientY ?? 0;
+    }
+    function onTouchMove(e: TouchEvent): void {
+      const y = e.touches[0]?.clientY ?? lastTouchYRef.current;
+      if (y - lastTouchYRef.current > 6) {
+        stickRef.current = false;
+      }
+      lastTouchYRef.current = y;
+    }
     node.addEventListener('scroll', onScroll, { passive: true });
-    return () => node.removeEventListener('scroll', onScroll);
-  }, [ready]);
+    node.addEventListener('wheel', onWheel, { passive: true });
+    node.addEventListener('touchstart', onTouchStart, { passive: true });
+    node.addEventListener('touchmove', onTouchMove, { passive: true });
+    return () => {
+      node.removeEventListener('scroll', onScroll);
+      node.removeEventListener('wheel', onWheel);
+      node.removeEventListener('touchstart', onTouchStart);
+      node.removeEventListener('touchmove', onTouchMove);
+    };
+  }, [ready, bubbles.length]);
 
   useEffect(() => {
     return () => {
