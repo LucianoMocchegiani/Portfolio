@@ -118,8 +118,6 @@
   max-height: min(62vh, 42rem);
   overflow-y: auto;
   overflow-x: hidden;
-  scrollbar-width: thin;
-  scrollbar-color: var(--scroll) transparent;
   padding: 2.75rem 0.15rem 2.25rem;
   box-sizing: border-box;
 }
@@ -142,15 +140,6 @@
 .threadOpening :global(.md),
 .threadOpening :global(.md p) {
   text-align: center;
-}
-
-.thread::-webkit-scrollbar {
-  width: 8px;
-}
-
-.thread::-webkit-scrollbar-thumb {
-  background: var(--scroll);
-  border-radius: 999px;
 }
 
 .hint {
