@@ -4,7 +4,7 @@ Ecosistema de identidad digital del GCBA, Phinx Lab (oct. 2024 — actualidad). 
 
 Protocolo SSI: credenciales verificables, DIDs (`did:quarkid`), **WACI**, DIDComm. Tres **apps de operadores** (emisor, verificador, accesos), **holder MiBA Connect** y el **nodo DID**.
 
-Qué hice: reestructurar y estabilizar; blockchain, wallets, IPFS, Lacchain; WebSockets; bugs criptográficos y de comunicación entre wallets; full stack.
+Qué hice: Lider tecnico, reestructurar y estabilizar; blockchain, wallets, IPFS, Lacchain; WebSockets; bugs criptográficos y de comunicación entre wallets; full stack.
 
 Logro: estabilización al reorganizar servicios y sacar fallas acumuladas.
 

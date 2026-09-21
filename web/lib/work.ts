@@ -156,7 +156,7 @@ export const PROJECTS: Project[] = [
     tagline: 'Identidad digital del GCBA',
     kind: 'asignado',
     href: 'https://buenosaires.gob.ar/gcaba_historico/jefaturadegabinete/innovacionytransformaciondigital/quarkid',
-    role: 'Software Engineer — Phinx Lab (oct. 2024 — actualidad)',
+    role: 'Lider Tecnico, Software Engineer — Phinx Lab (oct. 2024 — actualidad)',
     stack: ['NestJS', 'Next.js', 'QuarkID Agent', 'WACI', 'DIDComm', 'Redis', 'PostgreSQL', 'MongoDB'],
     about:
       'Protocolo de identidad auto-soberana de la Ciudad: credenciales verificables, DIDs, WACI y DIDComm. En el repo de BAX conviven emisor genérico, verificador, accesos a eventos, MiBA Connect, KMS y nodos (Sidetree / IPFS / blockchain).',
