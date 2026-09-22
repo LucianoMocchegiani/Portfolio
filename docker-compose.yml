@@ -78,7 +78,7 @@ services:
       dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_CHAT_API_URL: ${NEXT_PUBLIC_CHAT_API_URL:-http://localhost:3020}
-        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3003}
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3004}
     container_name: luciano-web
     restart: unless-stopped
     env_file:
@@ -86,8 +86,8 @@ services:
     environment:
       NODE_ENV: production
     ports:
-      # Host 3003: Kuatia Next en 3000, Faciliter web en 3002.
-      - "3003:3000"
+      # Host 3004: cedido a auth-proxy de Faciliter.
+      - "3004:3000"
     depends_on:
       chat-api:
         condition: service_healthy
